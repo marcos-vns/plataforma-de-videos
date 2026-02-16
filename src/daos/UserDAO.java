@@ -4,31 +4,36 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import database.DatabaseConnection;
 import model.User;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class UserDAO {
+	
+	public void save(User user) {
 
-	public void save(Connection conn, User user) {
-
-		String sql = "INSERT INTO `User` (name, username, password, email) VALUES (? , ? , ?, ?)";
+		String sql = "INSERT INTO UserAccount (name, username, password, email) VALUES (? , ? , ?, ?)";
 		
-		try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);){
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);){
 
-			ps.setString(1, user.getName());
-			ps.setString(2, user.getUsername());
+			
+			
 			ps.setString(3, user.getEmail());
 			ps.setString(4, user.getPassword());
+			ps.setString(2, user.getUsername());
+			ps.setString(1, user.getName());
 			
 			ps.executeUpdate();
 			
-			ResultSet rs = ps.getGeneratedKeys();
+			/*ResultSet rs = ps.getGeneratedKeys();
 			
 			if(rs.next()) {
 				user.setId(rs.getLong("id"));
-			}
+			}*/
+			
+			conn.close();
 
 		} catch (SQLException e) {
 			e.printStackTrace();

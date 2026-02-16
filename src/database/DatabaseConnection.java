@@ -15,7 +15,7 @@ public class DatabaseConnection {
     public static final String user = "root";
     public static final String password = "root";
     
-    static {
+    public static void init(){
     	try {
     		HikariConfig config = new HikariConfig();
     		

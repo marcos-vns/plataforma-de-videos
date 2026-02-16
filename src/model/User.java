@@ -15,6 +15,13 @@ public class User{
 
 	private List<UserChannel> participations;
 	
+	public User(String email, String password, String username, String name) {
+		this.email = email;
+		this.password = password;
+		this.username = username;
+		this.name = name;
+	}
+	
 	public long getId() {
 		return id;
 	}
@@ -48,7 +55,7 @@ public class User{
 	public Role getRole() {
 		return role;
 	}
-	public Role setRole(Role role) {
+	public void setRole(Role role) {
 		this.role = role;
 	}
 

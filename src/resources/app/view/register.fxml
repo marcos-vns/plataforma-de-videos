@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
+   <children>
+      <Button layoutX="553.0" layoutY="513.0" mnemonicParsing="false" text="Enviar" fx:id="send" onAction="#send">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Button>
+      <TextField layoutX="435.0" layoutY="310.0" promptText="email" fx:id="emailField">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </TextField>
+      <TextField layoutX="431.0" layoutY="418.0" promptText="senha" fx:id="passwordField">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </TextField>
+      <TextField layoutX="436.0" layoutY="209.0" promptText="username" fx:id="usernameField">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </TextField>
+      <TextField layoutX="436.0" layoutY="105.0" promptText="nome" fx:id="nameField">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </TextField>
+   </children>
+</AnchorPane>
