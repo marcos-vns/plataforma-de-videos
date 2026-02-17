@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.DashboardController">
+
+    <!-- TOPO -->
+    <top>
+        <HBox spacing="10">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+
+            <children>
+                <Label text="Painel do Usuário"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Logout" onAction="#logout"/>
+            </children>
+        </HBox>
+    </top>
+
+    <!-- CONTEÚDO -->
+    <center>
+        <VBox spacing="20">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <children>
+
+                <!-- Criar canal -->
+                <TitledPane text="Criar Canal" expanded="true">
+                    <content>
+                        <VBox spacing="10">
+                            <padding>
+                                <Insets top="10" right="10" bottom="10" left="10"/>
+                            </padding>
+
+                            <children>
+                                <TextField fx:id="channelNameField"
+                                           promptText="Nome do canal"/>
+
+                                <Button text="Criar Canal"
+                                        onAction="#createChannel"/>
+                            </children>
+                        </VBox>
+                    </content>
+                </TitledPane>
+
+                <!-- Gerenciar cargos -->
+                <TitledPane text="Adicionar usuário ao canal" expanded="true">
+                    <content>
+                        <VBox spacing="10">
+                            <padding>
+                                <Insets top="10" right="10" bottom="10" left="10"/>
+                            </padding>
+
+                            <children>
+                                <ComboBox fx:id="channelComboBox"
+                                          promptText="Selecione o canal"/>
+
+                                <TextField fx:id="usernameField"
+                                           promptText="Username do usuário"/>
+
+                                <ComboBox fx:id="roleComboBox"
+                                          promptText="Cargo"/>
+
+                                <Button text="Adicionar ao canal"
+                                        onAction="#addUserToChannel"/>
+                            </children>
+                        </VBox>
+                    </content>
+                </TitledPane>
+
+            </children>
+        </VBox>
+    </center>
+
+</BorderPane>

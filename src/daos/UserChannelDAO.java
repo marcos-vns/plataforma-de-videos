@@ -1,27 +1,25 @@
 package daos;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import database.DatabaseConnection;
 import model.Role;
+import model.User;
 import model.UserChannel;
 
 public class UserChannelDAO {
 	
-	public void save(Connection conn, UserChannel participation) {
+	public void save(long userId, long channelId, Role role) {
 
-			String sql = "INSERT INTO UserChannel (userid, channelid, role) VALUES (? , ? , ?)";
+			String sql = "INSERT INTO UserChannel (userid, channelid, role) VALUES (?, ?, ?)";
 			
-			long userId = (participation.getUser()).getId();
-			long channelId = participation.getChannel().getId();
-			String role = participation.getRole().toString();
-			
-			
-			try (PreparedStatement ps = conn.prepareStatement(sql);){
+			try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
 
 				ps.setLong(1, userId);
 				ps.setLong(2, channelId);
-				ps.setString(3, role);
+				ps.setString(3, role.name());
 				
 				ps.executeUpdate();
 
@@ -31,43 +29,51 @@ public class UserChannelDAO {
 
 	}
 	
-	public void addNewMember(Connection conn, User userRequestingId, String usernameToAdd) {
+	public boolean exists(long userId, long channelId) {
 		
-		if(userRequestingId.getRole != Role.OWNER) {
-			System.out.println("sem permissao para essa acao");
-			return;
-		}
+		String sql = "SELECT userid, channelid from UserChannel WHERE userid = ? AND channelid = ?";
 		
-		String sql = "SELECT * FROM account WHERE account.username = ?";
-		
-		try (PreparedStatement ps = conn.prepareStatement(sql);){
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
 
-			ps.setString(0, usernameToAdd);
-			ps.executeQuery();
-			
-			User userToAdd = null;
+			ps.setLong(1, userId);
+			ps.setLong(2, channelId);
 			
 			ResultSet rs = ps.executeQuery();
 			
-			if(rs.next()) {
-				
-				String name = rs.getString("");
-			}
-			
-			if(userToAdd.getRole() != null) {
-				System.out.println("Usuario ja possui um cargo (" + userToAdd.getRole() + ")");
-			}
-			
-			
-			
+			if(rs.next()) { return true; };
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
+		return false;
+		
 	}
 	
-	// public void removerMembroDoCanal()
+	public boolean hasPermission(long userId, long channelId, Role role) {
+		
+		String sql = "SELECT * from UserChannel WHERE userid = ? AND channelid = ?";
+		
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
+
+			ps.setLong(1, userId);
+			ps.setLong(2, channelId);
+			ps.setString(3, role.name());
+			
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				boolean isOwner = rs.getString("role") == "OWNER";
+				if(isOwner) { return true; };
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+		
+	}
 		
 }
 	

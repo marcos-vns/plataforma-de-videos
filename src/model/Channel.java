@@ -8,6 +8,11 @@ public class Channel {
 	
 	private ArrayList<UserChannel> cargos;
 	
+	public Channel(long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public long getId() {
 		return id;
 	}

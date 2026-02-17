@@ -1,5 +1,6 @@
 package service;
 
+import daos.ChannelDAO;
 import daos.UserDAO;
 import model.User;
 
@@ -13,8 +14,17 @@ public class UserService {
 
 	public void register(String email, String password, String username, String name) {
 		
-		User newUser = new User(email, password, username, name);
+		if (userDao.findByEmail(email) != null) {
+	        throw new RuntimeException("Email ja cadastrado");
+	    }
+
+	    if (userDao.findByUsername(username) != null) {
+	        throw new RuntimeException("Username ja existe");
+	    }
+
+	    String hash = PasswordService.hashPassword(password);
 		
+		User newUser = new User(email, hash, username, name);
 		userDao.save(newUser);
 	}
 	

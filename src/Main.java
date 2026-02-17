@@ -8,33 +8,50 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-
+import daos.ChannelDAO;
+import daos.UserChannelDAO;
 import daos.UserDAO;
 import database.DatabaseConnection;
 import model.User;
+import service.AuthenticationService;
+import service.ChannelService;
+import service.UserChannelService;
 
 public class Main extends Application {
 	
-	// aqui vai ser a pagina inicial depois
-	
 	@Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) throws Exception {
 
-		DatabaseConnection.init();
-		
-        FXMLLoader loader =
-            new FXMLLoader(getClass().getResource("/resources/app/view/login.fxml"));
+	    DatabaseConnection.init();
 
-        Scene scene = new Scene(loader.load());
-        
-        SceneManager.setStage(stage);
-        
-        stage.setScene(scene);
-        stage.show();
-    }
+	    // DAOs
+	    UserDAO userDao = new UserDAO();
+	    ChannelDAO channelDao = new ChannelDAO();
+	    UserChannelDAO userChannelDao = new UserChannelDAO();
 
-    public static void main(String[] args) {
-        launch();
-    }
+	    // Services
+	    AuthenticationService authenticationService =
+	            new AuthenticationService(userDao);
+
+	    UserChannelService userChannelService =
+	            new UserChannelService(userChannelDao, userDao);
+	    
+	    ChannelService channelService =
+	            new ChannelService(channelDao, userChannelService);
+
+
+	    // Scene manager recebe dependências
+	    SceneManager.init(
+	            stage,
+	            authenticationService,
+	            channelService,
+	            userChannelService
+	    );
+
+	    SceneManager.switchScene("/resources/app/view/login.fxml");
+
+	    stage.show();
+	}
+
 
 }

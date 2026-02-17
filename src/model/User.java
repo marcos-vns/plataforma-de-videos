@@ -10,14 +10,21 @@ public class User{
 	private String name;
 	private String username;
 	private String email;
-	private String password;
+	private String passwordHash;
 	private Role role;
 
 	private List<UserChannel> participations;
 	
+	public User(long id, String email, String username, String name, String password) {
+		this.id = id;
+		this.email = email;
+		this.passwordHash = password;
+		this.name = name;
+	}
+	
 	public User(String email, String password, String username, String name) {
 		this.email = email;
-		this.password = password;
+		this.passwordHash = password;
 		this.username = username;
 		this.name = name;
 	}
@@ -46,11 +53,11 @@ public class User{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getPassword() {
-		return password;
+	public String getPasswordHash() {
+		return passwordHash;
 	}
 	public void setPassword(String password) {
-		this.password = password;
+		this.passwordHash = password;
 	}
 	public Role getRole() {
 		return role;

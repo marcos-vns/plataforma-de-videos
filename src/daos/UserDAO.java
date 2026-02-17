@@ -14,24 +14,16 @@ public class UserDAO {
 	
 	public void save(User user) {
 
-		String sql = "INSERT INTO UserAccount (name, username, password, email) VALUES (? , ? , ?, ?)";
+		String sql = "INSERT INTO UserAccount (name, username, email, password) VALUES (? , ? , ?, ?)";
 		
-		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);){
-
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
 			
-			
-			ps.setString(3, user.getEmail());
-			ps.setString(4, user.getPassword());
-			ps.setString(2, user.getUsername());
 			ps.setString(1, user.getName());
+			ps.setString(2, user.getUsername());
+			ps.setString(3, user.getEmail());
+			ps.setString(4, user.getPasswordHash());
 			
 			ps.executeUpdate();
-			
-			/*ResultSet rs = ps.getGeneratedKeys();
-			
-			if(rs.next()) {
-				user.setId(rs.getLong("id"));
-			}*/
 			
 			conn.close();
 
@@ -41,25 +33,60 @@ public class UserDAO {
 
 	}
 	
-	public void find(Connection conn, int id) {
+	public User findByUsername(String usernameToFind) {
 		
-		String sql = "SELECT name FROM `User` WHERE id = ?";
+		String sql = "SELECT * FROM UserAccount WHERE username = ?";
 		
-		try (PreparedStatement ps = conn.prepareStatement(sql);){
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
 
-			ps.setLong(1, id);
+			ps.setString(1, usernameToFind);
 			
 			ResultSet rs = ps.executeQuery();
 			
-			if(rs.next()) {
-				String name = rs.getString("name");
-				System.out.println(name);
-			}
-			
+			if (rs.next()) {
+                return new User(
+                        rs.getLong("id"),
+                        rs.getString("email"),
+                        rs.getString("username"),
+                        rs.getString("name"),
+                        rs.getString("password")
+                );
+            }
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		return null;
+		
+	}
+	
+	public User findByEmail(String emailToFind) {
+		
+		String sql = "SELECT * FROM UserAccount WHERE email = ?";
+		
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
+
+			ps.setString(1, emailToFind);
+			
+			ResultSet rs = ps.executeQuery();
+			
+			if (rs.next()) {
+                return new User(
+                        rs.getLong("id"),
+                        rs.getString("email"),
+                        rs.getString("username"),
+                        rs.getNString("name"),
+                        rs.getString("password")
+                	);
+            }
+		
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 		
 	}
 

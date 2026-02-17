@@ -29,13 +29,12 @@ public class RegisterController {
     			emailField.getText(), 
     			passwordField.getText(), 
     			usernameField.getText(), 
-    			nameField.getText());
+    			nameField.getText()
+    		);
     }
     
     @FXML
     public void initialize() {
-        
     	userService = new UserService(new UserDAO());
-    	
     }
 }
