@@ -9,12 +9,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import daos.ChannelDAO;
+import daos.PostDAO;
 import daos.UserChannelDAO;
 import daos.UserDAO;
 import database.DatabaseConnection;
 import model.User;
 import service.AuthenticationService;
 import service.ChannelService;
+import service.FileService;
 import service.UserChannelService;
 
 public class Main extends Application {
@@ -28,6 +30,7 @@ public class Main extends Application {
 	    UserDAO userDao = new UserDAO();
 	    ChannelDAO channelDao = new ChannelDAO();
 	    UserChannelDAO userChannelDao = new UserChannelDAO();
+	    PostDAO postDao = new PostDAO();
 
 	    // Services
 	    AuthenticationService authenticationService =
@@ -39,13 +42,15 @@ public class Main extends Application {
 	    ChannelService channelService =
 	            new ChannelService(channelDao, userChannelService);
 
-
-	    // Scene manager recebe dependências
+	    FileService fileService = 
+	    		new FileService();
+	    
 	    SceneManager.init(
 	            stage,
 	            authenticationService,
 	            channelService,
-	            userChannelService
+	            userChannelService,
+	            fileService,
 	    );
 
 	    SceneManager.switchScene("/resources/app/view/login.fxml");

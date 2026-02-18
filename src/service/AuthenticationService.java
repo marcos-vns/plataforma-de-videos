@@ -26,7 +26,7 @@ public class AuthenticationService {
             return false;
         }
 
-        Session.login(user);
+        UserSession.login(user);
         
         System.out.println("logado!");
         
@@ -34,7 +34,7 @@ public class AuthenticationService {
     }
 
     public void logout() {
-        Session.logout();
+        UserSession.logout();
     }
 }
 

@@ -7,7 +7,7 @@ import model.Channel;
 import model.Role;
 import service.AuthenticationService;
 import service.ChannelService;
-import service.Session;
+import service.UserSession;
 import service.UserChannelService;
 
 public class DashboardController {
@@ -61,7 +61,7 @@ public class DashboardController {
     @FXML
     private void loadUserChannels() {
         channelComboBox.getItems().setAll(
-            channelService.findChannelsByUser(Session.getUser().getId())
+            channelService.findChannelsByUser(UserSession.getUser().getId())
         );
     }
     

@@ -26,7 +26,7 @@ public class UserChannelService {
 	
 	public void addUserToChannel(String username, long channelId, Role role) {
 			
-		User currentUser = Session.getUser();
+		User currentUser = UserSession.getUser();
         
         if (currentUser == null) {
             throw new RuntimeException("Usuário não autenticado");

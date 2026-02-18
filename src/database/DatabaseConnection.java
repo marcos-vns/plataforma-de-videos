@@ -31,7 +31,7 @@ public class DatabaseConnection {
             
             dataSource = new HikariDataSource(config);
             
-            System.out.println("✅ Connection Pool inicializado com sucesso!");
+            System.out.println("Connection Pool inicializado com sucesso!");
     		
     	} catch (Exception e) {
     		System.out.println("Erro ao fazer conexao com o banco de dados");

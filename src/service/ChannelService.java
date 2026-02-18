@@ -20,7 +20,7 @@ public class ChannelService {
 	public void create(String name) {
 		
 		Channel newChannel = channelDao.save(name);
-		userChannelService.addUserToChannelCreation(Session.getUser().getId(),
+		userChannelService.addUserToChannelCreation(UserSession.getUser().getId(),
 				newChannel.getId(),
 				Role.OWNER
 			);
