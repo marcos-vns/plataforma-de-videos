@@ -4,7 +4,7 @@ public class TextPost extends Post {
     private String content;
 
     public TextPost() {
-        this.setTipoPost(PostType.TEXTO);
+        this.setPostType(PostType.TEXT);
     }
 
 	public String getContent() {

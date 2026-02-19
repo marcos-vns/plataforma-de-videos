@@ -18,7 +18,7 @@ public class UserChannelDAO {
 			try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
 				ps.setLong(1, userId);
 				ps.setLong(2, channelId);
-				ps.setString(3, role.name());
+				ps.setString(3, role.name().toLowerCase());
 				
 				ps.executeUpdate();
 
@@ -64,7 +64,7 @@ public class UserChannelDAO {
 			
 			if(rs.next()) {
 				
-				if (rs.getString(1).equals(role.name())) {
+				if (rs.getString(1).equalsIgnoreCase(role.name())) {
 					return true;
 				}
 				
@@ -77,6 +77,23 @@ public class UserChannelDAO {
 		return false;
 		
 	}
+
+    public Role getRole(long userId, long channelId) {
+        String sql = "SELECT role FROM user_channel WHERE user_id = ? AND channel_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.setLong(2, channelId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Role.valueOf(rs.getString("role").toUpperCase());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 		
 }
 	

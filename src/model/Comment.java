@@ -8,6 +8,7 @@ public class Comment {
     private long userId;
     private String username; // Auxiliary for UI
     private String text;
+    private Long parentId;
     private Timestamp createdAt;
 
     public Comment() {}
@@ -26,6 +27,9 @@ public class Comment {
 
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
+
+    public Long getParentId() { return parentId; }
+    public void setParentId(Long parentId) { this.parentId = parentId; }
 
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }

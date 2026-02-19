@@ -9,12 +9,17 @@ import model.Comment;
 public class CommentDAO {
 
     public void save(Comment comment) throws SQLException {
-        String sql = "INSERT INTO comments (post_id, user_id, text) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO comments (post_id, user_id, text, parent_id) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, comment.getPostId());
             ps.setLong(2, comment.getUserId());
             ps.setString(3, comment.getText());
+            if (comment.getParentId() != null) {
+                ps.setLong(4, comment.getParentId());
+            } else {
+                ps.setNull(4, java.sql.Types.INTEGER);
+            }
             ps.executeUpdate();
 
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -40,6 +45,10 @@ public class CommentDAO {
                     comment.setPostId(rs.getLong("post_id"));
                     comment.setUserId(rs.getLong("user_id"));
                     comment.setText(rs.getString("text"));
+                    long parentId = rs.getLong("parent_id");
+                    if (!rs.wasNull()) {
+                        comment.setParentId(parentId);
+                    }
                     comment.setCreatedAt(rs.getTimestamp("created_at"));
                     comment.setUsername(rs.getString("username"));
                     comments.add(comment);

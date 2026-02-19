@@ -14,6 +14,7 @@ public class FileService {
     private static final String DIRETORIO_BASE = "storage"; 
     private static final String PASTA_VIDEOS = "videos";
     private static final String PASTA_THUMBNAILS = "thumbnails";
+    private static final String PASTA_PROFILES = "profiles";
 
     public FileService() {
         createDirectories();
@@ -23,6 +24,7 @@ public class FileService {
         try {
             Files.createDirectories(Paths.get(DIRETORIO_BASE, PASTA_VIDEOS));
             Files.createDirectories(Paths.get(DIRETORIO_BASE, PASTA_THUMBNAILS));
+            Files.createDirectories(Paths.get(DIRETORIO_BASE, PASTA_PROFILES));
         } catch (IOException e) {
             e.printStackTrace(); // Trate com logs adequados
         }
@@ -30,30 +32,35 @@ public class FileService {
 
     /**
      * Salva o arquivo e retorna o caminho relativo para salvar no banco.
-     * @param arquivoOriginal O arquivo vindo do FileChooser do JavaFX
-     * @param tipo "VIDEO" ou "THUMBNAIL"
+     * @param originalFile O arquivo vindo do FileChooser do JavaFX
+     * @param type "VIDEO" ou "THUMBNAIL"
      * @return O caminho relativo (ex: videos/uuid.mp4)
      */
-    public String saveFile(File arquivoOriginal, String tipo) throws IOException {
-        if (arquivoOriginal == null) return null;
+    public String saveFile(File originalFile, String type) throws IOException {
+        if (originalFile == null) return null;
 
         // 1. Gerar nome único
-        String extensao = tipo.equals("VIDEO") ? ".mp4" : getExtension(arquivoOriginal.getName());
-        String novoNome = UUID.randomUUID().toString() + extensao;
+        String extension = type.equals("VIDEO") ? ".mp4" : getExtension(originalFile.getName());
+        String newName = UUID.randomUUID().toString() + extension;
 
         // 2. Definir pasta de destino
-        String subPasta = tipo.equals("VIDEO") ? PASTA_VIDEOS : PASTA_THUMBNAILS;
-        Path destino = Paths.get(DIRETORIO_BASE, subPasta, novoNome);
+        String subFolder;
+        switch (type) {
+            case "VIDEO" -> subFolder = PASTA_VIDEOS;
+            case "PROFILE" -> subFolder = PASTA_PROFILES;
+            default -> subFolder = PASTA_THUMBNAILS;
+        }
+        Path destination = Paths.get(DIRETORIO_BASE, subFolder, newName);
 
         // 3. Processar ou copiar o arquivo
-        if (tipo.equals("VIDEO")) {
-            convertVideo(arquivoOriginal, destino.toFile());
+        if (type.equals("VIDEO")) {
+            convertVideo(originalFile, destination.toFile());
         } else {
-            Files.copy(arquivoOriginal.toPath(), destino, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(originalFile.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
         }
 
         // 4. Retornar o caminho relativo (para salvar no banco)
-        return subPasta + File.separator + novoNome;
+        return subFolder + File.separator + newName;
     }
 
     private void convertVideo(File input, File output) throws IOException {

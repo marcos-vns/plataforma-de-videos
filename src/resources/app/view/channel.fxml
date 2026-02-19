@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChannelController">
+    <top>
+        <VBox>
+            <!-- Navigation Bar (Reuse dashboard-like top if needed, but here simple back button) -->
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: white; -fx-padding: 10 20 10 20; -fx-border-color: #ddd; -fx-border-width: 0 0 1 0;">
+                <Button onAction="#goBack" text="←" style="-fx-background-color: transparent; -fx-font-size: 20; -fx-cursor: hand;" />
+                <Label text="Streamly" textFill="BLUE">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+            </HBox>
+
+            <!-- Channel Info Header -->
+            <HBox alignment="CENTER" style="-fx-background-color: white;">
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="20" maxWidth="1100.0" HBox.hgrow="ALWAYS">
+                        <padding>
+                            <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+                        </padding>
+                        <children>
+                            <ImageView fx:id="channelProfilePic" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
+                                <clip>
+                                    <Circle centerX="60.0" centerY="60.0" radius="60.0" />
+                                </clip>
+                            </ImageView>
+                            <VBox spacing="5.0" alignment="CENTER_LEFT">
+                                <children>
+                                    <Label fx:id="channelNameLabel" text="Nome do Canal">
+                                        <font>
+                                            <Font name="System Bold" size="28.0" />
+                                        </font>
+                                    </Label>
+                                    <Label fx:id="subscriberCountLabel" text="0 inscritos" textFill="#606060">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <HBox spacing="10.0">
+                                        <children>
+                                            <Button text="Inscrever-se" style="-fx-background-color: black; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 15 8 15; -fx-font-weight: bold; -fx-cursor: hand;" />
+                                            <Button fx:id="studioBtn" onAction="#enterStudio" text="Gerenciar Canal" visible="false" managed="false" style="-fx-background-color: #f0f0f0; -fx-background-radius: 20; -fx-padding: 8 15 8 15; -fx-font-weight: bold; -fx-cursor: hand;" />
+                                        </children>
+                                        <VBox.margin>
+                                            <Insets top="10.0" />
+                                        </VBox.margin>
+                                    </HBox>
+                                </children>
+                            </VBox>
+                        </children>
+                    </HBox>
+                </children>
+            </HBox>
+
+            <!-- Tabs -->
+            <HBox alignment="CENTER" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-width: 0 0 1 0;">
+                <children>
+                    <HBox spacing="30.0" maxWidth="1100.0" HBox.hgrow="ALWAYS">
+                        <padding>
+                            <Insets left="40.0" right="40.0" />
+                        </padding>
+                        <children>
+                            <Button fx:id="videosTabBtn" onAction="#onVideosTabClicked" text="VÍDEOS" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 10 0 10 0;" />
+                            <Button fx:id="postsTabBtn" onAction="#onPostsTabClicked" text="POSTAGENS" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 10 0 10 0;" />
+                        </children>
+                    </HBox>
+                </children>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+            <content>
+                <VBox spacing="20.0" alignment="TOP_CENTER">
+                    <padding>
+                        <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+                    </padding>
+                    <children>
+                        <VBox maxWidth="1100.0" spacing="20.0" alignment="TOP_LEFT">
+                            <children>
+                                <!-- Filters -->
+                                <HBox spacing="10.0">
+                                    <children>
+                                        <Button fx:id="recentFilterBtn" onAction="#onRecentClicked" text="Recentes" style="-fx-background-radius: 15; -fx-cursor: hand;" />
+                                        <Button fx:id="popularFilterBtn" onAction="#onPopularClicked" text="Populares" style="-fx-background-radius: 15; -fx-cursor: hand;" />
+                                        <Button fx:id="oldestFilterBtn" onAction="#onOldestClicked" text="Antigos" style="-fx-background-radius: 15; -fx-cursor: hand;" />
+                                    </children>
+                                </HBox>
+                                
+                                <FlowPane fx:id="contentGrid" hgap="20.0" vgap="20.0" prefWrapLength="1100.0" alignment="TOP_LEFT" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

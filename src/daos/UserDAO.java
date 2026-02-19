@@ -14,7 +14,7 @@ public class UserDAO {
 	
 	public void save(User user) {
 
-		String sql = "INSERT INTO UserAccount (name, username, email, password) VALUES (? , ? , ?, ?)";
+		String sql = "INSERT INTO UserAccount (name, username, email, password, profile_picture_url) VALUES (? , ? , ?, ?, ?)";
 		
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
 			
@@ -22,6 +22,7 @@ public class UserDAO {
 			ps.setString(2, user.getUsername());
 			ps.setString(3, user.getEmail());
 			ps.setString(4, user.getPasswordHash());
+			ps.setString(5, user.getProfilePictureUrl());
 			
 			ps.executeUpdate();
 			
@@ -49,7 +50,8 @@ public class UserDAO {
                         rs.getString("email"),
                         rs.getString("username"),
                         rs.getString("name"),
-                        rs.getString("password")
+                        rs.getString("password"),
+                        rs.getString("profile_picture_url")
                 );
             }
 
@@ -77,7 +79,8 @@ public class UserDAO {
                         rs.getString("email"),
                         rs.getString("username"),
                         rs.getNString("name"),
-                        rs.getString("password")
+                        rs.getString("password"),
+                        rs.getString("profile_picture_url")
                 	);
             }
 		

@@ -6,9 +6,10 @@ public abstract class Post {
     private Long channelId;
     private String title;
     private String thumbnailUrl;
-    private PostType tipoPost; // Enum: VIDEO, TEXTO
+    private PostType postType; // Enum: VIDEO, TEXT
     private int likes;
     private int dislikes;
+    private java.time.LocalDateTime createdAt;
     
 	public Long getId() {
 		return id;
@@ -34,11 +35,11 @@ public abstract class Post {
 	public void setThumbnailUrl(String thumbnailUrl) {
 		this.thumbnailUrl = thumbnailUrl;
 	}
-	public PostType getTipoPost() {
-		return tipoPost;
+	public PostType getPostType() {
+		return postType;
 	}
-	public void setTipoPost(PostType tipoPost) {
-		this.tipoPost = tipoPost;
+	public void setPostType(PostType postType) {
+		this.postType = postType;
 	}
     public int getLikes() {
         return likes;
@@ -52,9 +53,15 @@ public abstract class Post {
     public void setDislikes(int dislikes) {
         this.dislikes = dislikes;
     }
+    public java.time.LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(java.time.LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 	
     @Override
     public String toString() {
-        return "[" + tipoPost + "] " + title;
+        return "[" + postType + "] " + title;
     }
 }

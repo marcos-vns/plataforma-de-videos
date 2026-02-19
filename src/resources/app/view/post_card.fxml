@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
 
 <VBox fx:id="cardRoot" spacing="5.0" style="-fx-cursor: hand; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;" 
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
@@ -16,7 +17,7 @@
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
     <children>
-        <StackPane style="-fx-background-color: #f0f0f0;" prefHeight="157.0">
+        <StackPane style="-fx-background-color: #f0f0f0;" prefHeight="157.0" mouseTransparent="true">
             <children>
                 <ImageView fx:id="thumbnail" fitHeight="157.0" fitWidth="260.0" preserveRatio="true" />
                 <Label fx:id="typeTag" text="TAG" StackPane.alignment="BOTTOM_RIGHT" 
@@ -27,11 +28,17 @@
                 </Label>
             </children>
         </StackPane>
-        <Label fx:id="titleLabel" text="Título do Vídeo" style="-fx-font-weight: bold; -fx-font-size: 14px;" wrapText="true" />
+        <Label fx:id="titleLabel" text="Título do Vídeo" style="-fx-font-weight: bold; -fx-font-size: 14px;" wrapText="true" mouseTransparent="true" />
         <HBox alignment="CENTER_LEFT" spacing="10">
             <children>
-                <Label fx:id="channelLabel" text="Nome do Canal" style="-fx-text-fill: #606060; -fx-font-size: 12px;" />
+                <ImageView fx:id="channelProfilePic" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#onChannelClicked" style="-fx-cursor: hand;">
+                    <clip>
+                        <javafx.scene.shape.Circle centerX="12.0" centerY="12.0" radius="12.0" />
+                    </clip>
+                </ImageView>
+                <Label fx:id="channelLabel" text="Nome do Canal" style="-fx-text-fill: #606060; -fx-font-size: 12px; -fx-cursor: hand;" onMouseClicked="#onChannelClicked" />
                 <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="viewsLabel" text="👁 0" style="-fx-text-fill: #606060; -fx-font-size: 12px;" />
                 <Label fx:id="likesLabel" text="👍 0" style="-fx-text-fill: #606060; -fx-font-size: 12px;" />
             </children>
         </HBox>

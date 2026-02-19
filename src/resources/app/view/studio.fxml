@@ -1,80 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.StudioController">
-
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.StudioController" prefWidth="900.0" prefHeight="700.0">
     <top>
-        <VBox alignment="CENTER" spacing="10">
-            <padding>
-                <Insets top="20" bottom="10"/>
-            </padding>
-            <children>
-                <Label fx:id="channelNameLabel" text="Estúdio do Canal">
+        <VBox>
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: white; -fx-padding: 10 20 10 20; -fx-border-color: #ddd; -fx-border-width: 0 0 1 0;">
+                <Button onAction="#backToDashboard" text="←" style="-fx-background-color: transparent; -fx-font-size: 20; -fx-cursor: hand;" />
+                <Label text="Estúdio de Criação" textFill="#e62117">
                     <font>
-                        <Font size="24.0" />
+                        <Font name="System Bold" size="24.0" />
                     </font>
                 </Label>
-            </children>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="roleLabel" text="Role: MODERATOR" style="-fx-background-color: #f0f0f0; -fx-padding: 5 10 5 10; -fx-background-radius: 10; -fx-font-weight: bold;" />
+            </HBox>
+            
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: white; -fx-padding: 20 40 20 40;">
+                <children>
+                    <ImageView fx:id="channelProfilePic" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                        <clip>
+                            <Circle centerX="40.0" centerY="40.0" radius="40.0" />
+                        </clip>
+                    </ImageView>
+                    <VBox spacing="5.0">
+                        <children>
+                            <Label fx:id="channelNameLabel" text="Nome do Canal">
+                                <font>
+                                    <Font name="System Bold" size="22.0" />
+                                </font>
+                            </Label>
+                            <Label text="Painel do canal" textFill="#606060" />
+                        </children>
+                    </VBox>
+                </children>
+            </HBox>
         </VBox>
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-            <content>
-                <VBox alignment="CENTER" spacing="20">
-                    <padding>
-                        <Insets top="10" right="20" bottom="20" left="20"/>
-                    </padding>
-        
-                    <children>
-                        <Label text="Meus Vídeos">
-                            <font>
-                                <Font name="System Bold" size="16.0" />
-                            </font>
-                        </Label>
-                        <ListView fx:id="videosListView" prefHeight="300.0" />
-        
-                        <Label text="Minhas Publicações de Texto">
-                            <font>
-                                <Font name="System Bold" size="16.0" />
-                            </font>
-                        </Label>
-                        <ListView fx:id="textPostsListView" prefHeight="300.0" />
-        
-                        <HBox spacing="10" alignment="CENTER">
-                            <children>
-                                <Button text="Criar Publicação"
-                                        onAction="#createPost"
-                                        prefWidth="180" prefHeight="40"/>
-                                
-                                <Button text="Ver Publicação"
-                                        onAction="#viewSelectedPost"
-                                        prefWidth="140" prefHeight="40"/>
-                                
-                                <Button text="Excluir"
-                                        onAction="#deleteSelectedPost"
-                                        prefWidth="140" prefHeight="40"/>
-                                
-                                <Button text="Voltar"
-                                        onAction="#backToDashboard"
-                                        prefWidth="140" prefHeight="40"/>
-                            </children>
-                        </HBox>
-                    </children>
-                </VBox>
-            </content>
-        </ScrollPane>
-    </center>
+        <StackPane>
+            <!-- MAIN DASHBOARD (Visible initially) -->
+            <VBox fx:id="mainDashboard" spacing="20.0" style="-fx-background-color: #f9f9f9;">
+                <padding>
+                    <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+                </padding>
+                <children>
+                    <!-- Search and Action Row -->
+                    <HBox spacing="15.0" alignment="CENTER_LEFT">
+                        <children>
+                            <TextField fx:id="searchField" promptText="Pesquisar posts no canal..." HBox.hgrow="ALWAYS" prefHeight="35.0" />
+                            <Button onAction="#handleSearch" text="Pesquisar" prefHeight="35.0" />
+                            <Button fx:id="createPostBtn" onAction="#createPost" text="CRIAR POST" style="-fx-background-color: #065fd4; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" prefHeight="35.0" />
+                        </children>
+                    </HBox>
 
+                    <!-- Content Area -->
+                    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+                        <children>
+                            <!-- List of Posts -->
+                            <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                                <children>
+                                    <Label text="Posts Recentes" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+                                    <ListView fx:id="postsListView" VBox.vgrow="ALWAYS" style="-fx-background-radius: 5; -fx-border-color: #ddd; -fx-border-radius: 5;" />
+                                </children>
+                            </VBox>
+
+                            <!-- Right Side Panel: Channel Management (Owner only) -->
+                            <VBox fx:id="ownerPanel" spacing="15.0" prefWidth="250.0" style="-fx-background-color: white; -fx-padding: 15; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;">
+                                <children>
+                                    <Label text="Gerenciar Canal" style="-fx-font-weight: bold; -fx-font-size: 14px;" />
+                                    <Separator />
+                                    <Button onAction="#handleEditChannel" text="Alterar Nome/Foto" maxWidth="Infinity" />
+                                    <Button onAction="#handleAddMember" text="Adicionar Membro" maxWidth="Infinity" />
+                                    <Button onAction="#handleDeleteChannel" text="Excluir Canal" maxWidth="Infinity" style="-fx-text-fill: red;" />
+                                </children>
+                            </VBox>
+                        </children>
+                    </HBox>
+                </children>
+            </VBox>
+
+            <!-- COMMENT MODERATION VIEW (Hidden by default) -->
+            <VBox fx:id="commentModerationView" spacing="15.0" visible="false" managed="false" style="-fx-background-color: white;">
+                <padding>
+                    <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+                </padding>
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="15.0">
+                        <children>
+                            <Button onAction="#closeModeration" text="← Voltar para Posts" />
+                            <Label fx:id="moderatingPostTitle" text="Moderando: Título do Post" style="-fx-font-weight: bold; -fx-font-size: 18px;" />
+                        </children>
+                    </HBox>
+                    
+                    <!-- Post Edit Area (Editor/Owner only) -->
+                    <VBox fx:id="postEditArea" spacing="10.0" style="-fx-background-color: #f9f9f9; -fx-padding: 15; -fx-border-color: #ddd; -fx-border-radius: 5;">
+                        <children>
+                            <Label text="Editar Postagem" style="-fx-font-weight: bold;" />
+                            <TextField fx:id="editTitleField" promptText="Título" />
+                            <TextArea fx:id="editDescriptionField" promptText="Descrição / Conteúdo" prefHeight="80.0" wrapText="true" />
+                            <HBox spacing="10.0">
+                                <children>
+                                    <Button onAction="#handleUpdatePost" text="Salvar Alterações" style="-fx-background-color: #065fd4; -fx-text-fill: white;" />
+                                    <Button onAction="#deleteSelectedPost" text="Excluir Post" style="-fx-text-fill: red;" />
+                                </children>
+                            </HBox>
+                        </children>
+                    </VBox>
+
+                    <Label text="Comentários" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                        <content>
+                            <VBox fx:id="commentsContainer" spacing="10.0" />
+                        </content>
+                    </ScrollPane>
+                </children>
+            </VBox>
+        </StackPane>
+    </center>
 </BorderPane>

@@ -28,20 +28,17 @@ public class Main extends Application {
 
 	    DatabaseConnection.init();
 	    
-	    // Garantir que as tabelas existem
 	    try {
 	        new database.SqlTables().createTables();
 	    } catch (SQLException e) {
 	        System.err.println("Erro ao criar tabelas: " + e.getMessage());
 	    }
 
-	    // DAOs
 	    UserDAO userDao = new UserDAO();
 	    ChannelDAO channelDao = new ChannelDAO();
 	    UserChannelDAO userChannelDao = new UserChannelDAO();
 	    PostDAO postDao = new PostDAO();
 
-	    // Services
 	    AuthenticationService authenticationService =
 	            new AuthenticationService(userDao);
 

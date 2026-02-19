@@ -12,7 +12,7 @@ public class SqlTables {
             throw new SQLException("Conexão não foi inicializada ainda");
         }
         
-        String[] tableNames = {"UserAccount", "channels", "user_channel", "posts", "videos", "posts_texto"};
+        String[] tableNames = {"UserAccount", "channels", "user_channel", "posts", "videos", "text_posts"};
         String[] sql = {
             """
             CREATE TABLE IF NOT EXISTS UserAccount(
@@ -20,7 +20,8 @@ public class SqlTables {
                 name VARCHAR(100) NOT NULL,
                 username VARCHAR(50) NOT NULL UNIQUE,
                 email VARCHAR(100) NOT NULL UNIQUE,
-                password VARCHAR(255) NOT NULL
+                password VARCHAR(255) NOT NULL,
+                profile_picture_url VARCHAR(255)
             );
             """, 
             
@@ -28,7 +29,8 @@ public class SqlTables {
             CREATE TABLE IF NOT EXISTS channels(
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 name VARCHAR(100) NOT NULL,
-                subscribers BIGINT DEFAULT 0
+                subscribers BIGINT DEFAULT 0,
+                profile_picture_url VARCHAR(255)
             );
             """, 
             
@@ -51,7 +53,7 @@ public class SqlTables {
                             thumbnail_url VARCHAR(255),
                             likes INT DEFAULT 0,
                             dislikes INT DEFAULT 0,
-                            post_type ENUM('VIDEO', 'TEXTO') NOT NULL,
+                            post_type ENUM('VIDEO', 'TEXT') NOT NULL,
                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                             FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE
                         );
@@ -61,6 +63,7 @@ public class SqlTables {
                 post_id INT PRIMARY KEY,
                 description TEXT,
                 duration_seconds INT NOT NULL,
+                views BIGINT DEFAULT 0,
                 video_url VARCHAR(255) NOT NULL,
                 video_category ENUM('LONG', 'SHORT') NOT NULL,
                 FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
@@ -68,9 +71,9 @@ public class SqlTables {
             """,
 
             """
-            CREATE TABLE IF NOT EXISTS posts_texto(
+            CREATE TABLE IF NOT EXISTS text_posts(
                 post_id INT PRIMARY KEY,
-                conteudo TEXT NOT NULL,
+                content TEXT NOT NULL,
                 FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
             );
             """,
@@ -100,14 +103,17 @@ public class SqlTables {
         };
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Migração rápida para likes/dislikes/description se a tabela já existir
+            // Migração rápida para colunas que podem estar faltando
             try (Statement stmt = conn.createStatement()) {
                 try { stmt.execute("ALTER TABLE posts ADD COLUMN likes INT DEFAULT 0"); } catch (SQLException ignored) {}
                 try { stmt.execute("ALTER TABLE posts ADD COLUMN dislikes INT DEFAULT 0"); } catch (SQLException ignored) {}
                 try { stmt.execute("ALTER TABLE posts ADD COLUMN description TEXT"); } catch (SQLException ignored) {}
+                try { stmt.execute("ALTER TABLE UserAccount ADD COLUMN profile_picture_url VARCHAR(255)"); } catch (SQLException ignored) {}
+                try { stmt.execute("ALTER TABLE channels ADD COLUMN profile_picture_url VARCHAR(255)"); } catch (SQLException ignored) {}
+                try { stmt.execute("ALTER TABLE videos ADD COLUMN views BIGINT DEFAULT 0"); } catch (SQLException ignored) {}
             }
 
-            String[] tableNamesWithComments = {"UserAccount", "channels", "user_channel", "posts", "videos", "posts_texto", "post_likes", "comments"};
+            String[] tableNamesWithComments = {"UserAccount", "channels", "user_channel", "posts", "videos", "text_posts", "post_likes", "comments"};
             for(int i = 0; i < sql.length; i++) {
                 System.out.println("Verificando/Criando tabela: " + tableNamesWithComments[i]);
                 try (PreparedStatement ps = conn.prepareStatement(sql[i])) {

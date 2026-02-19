@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import model.Post;
+import model.Channel;
 import java.io.File;
 
 public class PostCardController {
@@ -13,14 +14,34 @@ public class PostCardController {
     @FXML private Label channelLabel;
     @FXML private Label typeTag;
     @FXML private Label likesLabel;
+    @FXML private Label viewsLabel;
+    @FXML private ImageView channelProfilePic;
 
     private Post post;
+    private Channel channel;
 
-    public void setData(Post post, String channelName) {
+    public void setData(Post post, Channel channel) {
         this.post = post;
+        this.channel = channel;
         titleLabel.setText(post.getTitle());
-        channelLabel.setText(channelName);
+        channelLabel.setText(channel != null ? channel.getName() : "Canal Desconhecido");
         likesLabel.setText("👍 " + post.getLikes());
+        
+        if (post instanceof model.Video video) {
+            viewsLabel.setText("👁 " + video.getViews());
+            viewsLabel.setVisible(true);
+            viewsLabel.setManaged(true);
+        } else {
+            viewsLabel.setVisible(false);
+            viewsLabel.setManaged(false);
+        }
+        
+        if (channel != null && channel.getProfilePictureUrl() != null && !channel.getProfilePictureUrl().isEmpty()) {
+            File picFile = new File("storage", channel.getProfilePictureUrl());
+            if (picFile.exists()) {
+                channelProfilePic.setImage(new Image(picFile.toURI().toString()));
+            }
+        }
         
         // Set Tag
         if (post instanceof model.Video video) {
@@ -44,7 +65,15 @@ public class PostCardController {
     }
 
     @FXML
-    private void onCardClicked() {
+    private void onCardClicked(javafx.scene.input.MouseEvent event) {
         SceneManager.showPostScene(post.getId());
+    }
+
+    @FXML
+    private void onChannelClicked(javafx.scene.input.MouseEvent event) {
+        event.consume(); // Prevent card click
+        if (channel != null) {
+            SceneManager.showChannelScene(channel);
+        }
     }
 }

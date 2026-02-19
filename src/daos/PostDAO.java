@@ -28,7 +28,7 @@ public class PostDAO {
             psPost.setLong(1, post.getChannelId());
             psPost.setString(2, post.getTitle());
             psPost.setString(3, post.getThumbnailUrl());
-            psPost.setString(4, post.getTipoPost().name()); // Salva "VIDEO" ou "TEXTO"
+            psPost.setString(4, post.getPostType().name()); // Salva "VIDEO" ou "TEXT"
             
             int affectedRows = psPost.executeUpdate();
 
@@ -40,6 +40,7 @@ public class PostDAO {
             try (ResultSet generatedKeys = psPost.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     post.setId(generatedKeys.getLong(1));
+                    post.setCreatedAt(java.time.LocalDateTime.now());
                     System.out.println("PostDAO: ID gerado: " + post.getId());
                 } else {
                     throw new SQLException("Falha ao criar post, nenhum ID obtido.");
@@ -49,10 +50,10 @@ public class PostDAO {
             // 4. Inserir na tabela filha específica (Polimorfismo)
             if (post instanceof Video) {
                 System.out.println("PostDAO: Inserindo na tabela 'videos'...");
-                salvarVideo((Video) post, conn);
+                saveVideo((Video) post, conn);
             } else if (post instanceof TextPost) {
-                System.out.println("PostDAO: Inserindo na tabela 'posts_texto'...");
-                salvarTexto((TextPost) post, conn);
+                System.out.println("PostDAO: Inserindo na tabela 'text_posts'...");
+                saveText((TextPost) post, conn);
             }
 
             // 5. EFETIVAR TRANSAÇÃO (Se chegou aqui, tudo deu certo)
@@ -83,10 +84,10 @@ public class PostDAO {
 
     public java.util.List<Post> findAll() throws SQLException {
         java.util.List<Post> posts = new java.util.ArrayList<>();
-        String sql = "SELECT p.*, v.description, v.duration_seconds, v.video_url, v.video_category, pt.conteudo " +
+        String sql = "SELECT p.*, v.description, v.duration_seconds, v.views, v.video_url, v.video_category, pt.content " +
                      "FROM posts p " +
                      "LEFT JOIN videos v ON p.id = v.post_id " +
-                     "LEFT JOIN posts_texto pt ON p.id = pt.post_id " +
+                     "LEFT JOIN text_posts pt ON p.id = pt.post_id " +
                      "ORDER BY p.created_at DESC";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -98,9 +99,10 @@ public class PostDAO {
                 Post post;
                 if ("VIDEO".equals(type)) {
                     Video video = new Video();
-                    video.setTipoPost(model.PostType.VIDEO);
+                    video.setPostType(model.PostType.VIDEO);
                     video.setDescription(rs.getString("description"));
                     video.setDurationSeconds(rs.getInt("duration_seconds"));
+                    video.setViews(rs.getLong("views"));
                     video.setVideoUrl(rs.getString("video_url"));
                     String category = rs.getString("video_category");
                     if (category != null) {
@@ -109,8 +111,8 @@ public class PostDAO {
                     post = video;
                 } else {
                     TextPost textPost = new TextPost();
-                    textPost.setTipoPost(model.PostType.TEXTO);
-                    textPost.setContent(rs.getString("conteudo"));
+                    textPost.setPostType(model.PostType.TEXT);
+                    textPost.setContent(rs.getString("content"));
                     post = textPost;
                 }
                 post.setId(rs.getLong("id"));
@@ -119,6 +121,10 @@ public class PostDAO {
                 post.setThumbnailUrl(rs.getString("thumbnail_url"));
                 post.setLikes(rs.getInt("likes"));
                 post.setDislikes(rs.getInt("dislikes"));
+                Timestamp ts = rs.getTimestamp("created_at");
+                if (ts != null) {
+                    post.setCreatedAt(ts.toLocalDateTime());
+                }
                 posts.add(post);
             }
         }
@@ -127,10 +133,10 @@ public class PostDAO {
 
     public java.util.List<Post> findAllByChannelId(long channelId) throws SQLException {
         java.util.List<Post> posts = new java.util.ArrayList<>();
-        String sql = "SELECT p.*, v.description, v.duration_seconds, v.video_url, v.video_category, pt.conteudo " +
+        String sql = "SELECT p.*, v.description, v.duration_seconds, v.views, v.video_url, v.video_category, pt.content " +
                      "FROM posts p " +
                      "LEFT JOIN videos v ON p.id = v.post_id " +
-                     "LEFT JOIN posts_texto pt ON p.id = pt.post_id " +
+                     "LEFT JOIN text_posts pt ON p.id = pt.post_id " +
                      "WHERE p.channel_id = ? " +
                      "ORDER BY p.created_at DESC";
 
@@ -145,9 +151,10 @@ public class PostDAO {
                     Post post;
                     if ("VIDEO".equals(type)) {
                         Video video = new Video();
-                        video.setTipoPost(model.PostType.VIDEO);
+                        video.setPostType(model.PostType.VIDEO);
                         video.setDescription(rs.getString("description"));
                         video.setDurationSeconds(rs.getInt("duration_seconds"));
+                        video.setViews(rs.getLong("views"));
                         video.setVideoUrl(rs.getString("video_url"));
                         String category = rs.getString("video_category");
                         if (category != null) {
@@ -156,8 +163,8 @@ public class PostDAO {
                         post = video;
                     } else {
                         TextPost textPost = new TextPost();
-                        textPost.setTipoPost(model.PostType.TEXTO);
-                        textPost.setContent(rs.getString("conteudo"));
+                        textPost.setPostType(model.PostType.TEXT);
+                        textPost.setContent(rs.getString("content"));
                         post = textPost;
                     }
                     post.setId(id);
@@ -166,6 +173,10 @@ public class PostDAO {
                     post.setThumbnailUrl(rs.getString("thumbnail_url"));
                     post.setLikes(rs.getInt("likes"));
                     post.setDislikes(rs.getInt("dislikes"));
+                    Timestamp ts = rs.getTimestamp("created_at");
+                    if (ts != null) {
+                        post.setCreatedAt(ts.toLocalDateTime());
+                    }
                     posts.add(post);
                 }
             }
@@ -175,10 +186,10 @@ public class PostDAO {
     }
 
     public Post findById(long id) throws SQLException {
-        String sql = "SELECT p.*, v.description, v.duration_seconds, v.video_url, v.video_category, pt.conteudo " +
+        String sql = "SELECT p.*, v.description, v.duration_seconds, v.views, v.video_url, v.video_category, pt.content " +
                      "FROM posts p " +
                      "LEFT JOIN videos v ON p.id = v.post_id " +
-                     "LEFT JOIN posts_texto pt ON p.id = pt.post_id " +
+                     "LEFT JOIN text_posts pt ON p.id = pt.post_id " +
                      "WHERE p.id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -191,9 +202,10 @@ public class PostDAO {
                     Post post;
                     if ("VIDEO".equals(type)) {
                         Video video = new Video();
-                        video.setTipoPost(model.PostType.VIDEO);
+                        video.setPostType(model.PostType.VIDEO);
                         video.setDescription(rs.getString("description"));
                         video.setDurationSeconds(rs.getInt("duration_seconds"));
+                        video.setViews(rs.getLong("views"));
                         video.setVideoUrl(rs.getString("video_url"));
                         String category = rs.getString("video_category");
                         if (category != null) {
@@ -202,8 +214,8 @@ public class PostDAO {
                         post = video;
                     } else {
                         TextPost textPost = new TextPost();
-                        textPost.setTipoPost(model.PostType.TEXTO);
-                        textPost.setContent(rs.getString("conteudo"));
+                        textPost.setPostType(model.PostType.TEXT);
+                        textPost.setContent(rs.getString("content"));
                         post = textPost;
                     }
                     post.setId(rs.getLong("id"));
@@ -212,11 +224,24 @@ public class PostDAO {
                     post.setThumbnailUrl(rs.getString("thumbnail_url"));
                     post.setLikes(rs.getInt("likes"));
                     post.setDislikes(rs.getInt("dislikes"));
+                    Timestamp ts = rs.getTimestamp("created_at");
+                    if (ts != null) {
+                        post.setCreatedAt(ts.toLocalDateTime());
+                    }
                     return post;
                 }
             }
         }
         return null;
+    }
+
+    public void incrementViews(long postId) throws SQLException {
+        String sql = "UPDATE videos SET views = views + 1 WHERE post_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, postId);
+            ps.executeUpdate();
+        }
     }
 
     public void delete(long id) throws SQLException {
@@ -313,7 +338,7 @@ public class PostDAO {
     }
 
     // Métodos auxiliares privados recebendo a conexão ABERTA
-    private void salvarVideo(Video video, Connection conn) throws SQLException {
+    private void saveVideo(Video video, Connection conn) throws SQLException {
         String sql = "INSERT INTO videos (post_id, description, duration_seconds, video_url, video_category) VALUES (?, ?, ?, ?, ?)";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -328,8 +353,8 @@ public class PostDAO {
         }
     }
 
-    private void salvarTexto(TextPost text, Connection conn) throws SQLException {
-        String sql = "INSERT INTO posts_texto (post_id, conteudo) VALUES (?, ?)";
+    private void saveText(TextPost text, Connection conn) throws SQLException {
+        String sql = "INSERT INTO text_posts (post_id, content) VALUES (?, ?)";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, text.getId()); // FK é o ID do pai

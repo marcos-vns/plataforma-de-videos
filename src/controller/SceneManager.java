@@ -10,6 +10,7 @@ import service.UserChannelService;
 import service.FileService;
 import service.PostService;
 import service.CommentService;
+import service.ChannelSession;
 import controller.PostController;
 import model.Channel;
 
@@ -113,6 +114,8 @@ public class SceneManager {
             Parent root = loader.load();
             StudioController studioController = loader.getController();
             if (studioController != null) {
+                // Ensure Session is updated
+                ChannelSession.setChannel(channel);
                 studioController.setChannel(channel);
             }
 
@@ -157,6 +160,39 @@ public class SceneManager {
         }
     }
 
+    public static void showChannelScene(Channel channel) {
+        try {
+            URL url = getFXMLUrl("/resources/app/view/channel.fxml");
+
+            if (url == null) {
+                throw new RuntimeException("FXML não encontrado: /resources/app/view/channel.fxml");
+            }
+
+            FXMLLoader loader = new FXMLLoader(url);
+            loader.setControllerFactory(clazz -> {
+                try {
+                    Object controller = clazz.getDeclaredConstructor().newInstance();
+                    injectServices(controller);
+                    return controller;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            Parent root = loader.load();
+            ChannelController channelController = loader.getController();
+            if (channelController != null) {
+                channelController.setChannel(channel);
+            }
+
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static void injectServices(Object controller) {
         if (controller instanceof DashboardController dc) {
             dc.setServices(channelService, userChannelService, authenticationService, postService);
@@ -176,6 +212,15 @@ public class SceneManager {
         }
         if (controller instanceof StudioController sc) {
             sc.setPostService(postService);
+            sc.setCommentService(commentService);
+            sc.setChannelService(channelService);
+            sc.setUserChannelService(userChannelService);
+        }
+        if (controller instanceof RegisterController rc) {
+            rc.setFileService(fileService);
+        }
+        if (controller instanceof ChannelController cc) {
+            cc.setServices(postService, channelService);
         }
     }
 }

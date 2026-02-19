@@ -4,11 +4,12 @@ public class Video extends Post {
 	
     private String description;
     private Integer durationSeconds;
+    private long views;
     private String videoUrl;
     private VideoCategory category; // Enum: LONGO, SHORT
     
     public Video() {
-        this.setTipoPost(PostType.VIDEO);
+        this.setPostType(PostType.VIDEO);
     }
 
 	public String getDescription() {
@@ -26,6 +27,14 @@ public class Video extends Post {
 	public void setDurationSeconds(Integer durationSeconds) {
 		this.durationSeconds = durationSeconds;
 	}
+
+    public long getViews() {
+        return views;
+    }
+
+    public void setViews(long views) {
+        this.views = views;
+    }
 
 	public String getVideoUrl() {
 		return videoUrl;

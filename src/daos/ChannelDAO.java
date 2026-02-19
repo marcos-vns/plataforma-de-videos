@@ -13,14 +13,15 @@ import model.Channel;
 
 public class ChannelDAO {
 
-	public Channel save(String channelName) {
+	public Channel save(String channelName, String profilePictureUrl) {
 
-	    String sql = "INSERT INTO channels (name) VALUES (?)";
+	    String sql = "INSERT INTO channels (name, profile_picture_url) VALUES (?, ?)";
 
 	    try (Connection conn = DatabaseConnection.getConnection(); 
 	         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
 	        ps.setString(1, channelName);
+	        ps.setString(2, profilePictureUrl);
 
 	        int affectedRows = ps.executeUpdate();
 
@@ -28,10 +29,10 @@ public class ChannelDAO {
 	            try (ResultSet rs = ps.getGeneratedKeys()) {
 	                if (rs.next()) {
 	                    // 1. Pegue o ID pelo índice 1 (primeira coluna do retorno)
-	                    long idGerado = rs.getLong(1);
+	                    long generatedId = rs.getLong(1);
 	                    
 	                    // 2. Use o 'channelName' que veio do parâmetro, não do ResultSet
-	                    return new Channel(idGerado, channelName);
+	                    return new Channel(generatedId, channelName, profilePictureUrl);
 	                }
 	            }
 	        }
@@ -43,15 +44,24 @@ public class ChannelDAO {
 	    return null;
 	}
     
-    public Channel findById(long id) {
-    	String sql = "SELECT name, subscribers FROM channels WHERE id = ?";
+    public Channel findById(long id, long userId) {
+        String sql = """
+            SELECT c.name, c.subscribers, c.profile_picture_url, uc.role
+            FROM channels c
+            LEFT JOIN user_channel uc ON uc.channel_id = c.id AND uc.user_id = ?
+            WHERE c.id = ?
+        """;
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)){
-        	ps.setLong(1, id);
+            ps.setLong(1, userId);
+            ps.setLong(2, id);
             ResultSet rs = ps.executeQuery();
             if(rs.next()) {
-                Channel channel = new Channel(id, rs.getString("name"));
-                // Note: Channel model might not have subscribers field yet, 
-                // but we can at least return the name.
+                Channel channel = new Channel(id, rs.getString("name"), rs.getString("profile_picture_url"));
+                channel.setSubscribers(rs.getLong("subscribers"));
+                String roleStr = rs.getString("role");
+                if (roleStr != null) {
+                    channel.setCurrentUserRole(model.Role.valueOf(roleStr.toUpperCase()));
+                }
                 return channel;
             }
         } catch (SQLException e) {
@@ -65,7 +75,7 @@ public class ChannelDAO {
         List<Channel> channels = new ArrayList<>();
 
         String sql = """
-            SELECT c.id, c.name
+            SELECT c.id, c.name, c.profile_picture_url, c.subscribers, uc.role
             FROM channels c
             JOIN user_channel uc ON uc.channel_id = c.id
             WHERE uc.user_id = ?
@@ -81,8 +91,15 @@ public class ChannelDAO {
             while (rs.next()) {
                 Channel channel = new Channel(
                     rs.getLong("id"),
-                    rs.getString("name")
+                    rs.getString("name"),
+                    rs.getString("profile_picture_url")
                 );
+                channel.setSubscribers(rs.getLong("subscribers"));
+                
+                String roleStr = rs.getString("role");
+                if (roleStr != null) {
+                    channel.setCurrentUserRole(model.Role.valueOf(roleStr.toUpperCase()));
+                }
 
                 channels.add(channel);
             }

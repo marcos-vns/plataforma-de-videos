@@ -1,7 +1,10 @@
 package controller;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
@@ -25,8 +28,10 @@ public class PostController {
     @FXML private Label postTitle;
     @FXML private MediaView mediaView;
     @FXML private TextArea txtContent;
+    @FXML private HBox textContentArea;
+    @FXML private ImageView textThumbnail;
     @FXML private TextArea postDescription;
-    @FXML private ListView<Comment> commentListView;
+    @FXML private VBox commentsContainer;
     @FXML private VBox videoControls;
     @FXML private Button btnPlayPause;
     @FXML private Slider progressBar;
@@ -37,6 +42,7 @@ public class PostController {
     @FXML private VBox descriptionContainer;
     @FXML private Label likesLabel;
     @FXML private Label dislikesLabel;
+    @FXML private Label viewsLabel;
     @FXML private Button btnLike;
     @FXML private Button btnDislike;
     @FXML private TextField commentInput;
@@ -60,6 +66,9 @@ public class PostController {
 
     private void loadPostData() {
         try {
+            // Increment views BEFORE loading (if not viewed in session)
+            postService.incrementViews(currentPostId);
+
             Post post = postService.getPostById(currentPostId);
             if (post != null) {
                 postTitle.setText(post.getTitle());
@@ -67,8 +76,13 @@ public class PostController {
                 dislikesLabel.setText(String.valueOf(post.getDislikes()));
                 
                 if (post instanceof Video video) {
+                    viewsLabel.setText("👁 " + video.getViews() + " visualizações");
+                    viewsLabel.setVisible(true);
+                    viewsLabel.setManaged(true);
                     setupVideo(video);
                 } else if (post instanceof TextPost textPost) {
+                    viewsLabel.setVisible(false);
+                    viewsLabel.setManaged(false);
                     setupText(textPost);
                 }
             }
@@ -132,7 +146,8 @@ public class PostController {
         descriptionContainer.setManaged(true);
         postDescription.setText(video.getDescription());
         mediaView.setVisible(true);
-        txtContent.setVisible(false);
+        textContentArea.setVisible(false);
+        textContentArea.setManaged(false);
         videoControls.setVisible(true);
 
         if (video.getVideoUrl() != null) {
@@ -215,9 +230,25 @@ public class PostController {
         descriptionContainer.setVisible(false);
         descriptionContainer.setManaged(false);
         mediaView.setVisible(false);
-        txtContent.setVisible(true);
+        textContentArea.setVisible(true);
+        textContentArea.setManaged(true);
         videoControls.setVisible(false);
         txtContent.setText(text.getContent());
+
+        if (text.getThumbnailUrl() != null && !text.getThumbnailUrl().isEmpty()) {
+            File file = new File("storage", text.getThumbnailUrl());
+            if (file.exists()) {
+                textThumbnail.setImage(new Image(file.toURI().toString()));
+                textThumbnail.setVisible(true);
+                textThumbnail.setManaged(true);
+            } else {
+                textThumbnail.setVisible(false);
+                textThumbnail.setManaged(false);
+            }
+        } else {
+            textThumbnail.setVisible(false);
+            textThumbnail.setManaged(false);
+        }
     }
 
     @FXML
@@ -240,6 +271,7 @@ public class PostController {
             mediaPlayer.dispose();
             mediaPlayer = null;
         }
+        textThumbnail.setImage(null);
         
         if (ChannelSession.hasSelectedChannel()) {
             SceneManager.showStudioScene(ChannelSession.getChannel());
@@ -250,10 +282,79 @@ public class PostController {
 
     private void loadComments() {
         try {
-            java.util.List<Comment> comments = commentService.getCommentsByPost(currentPostId);
-            commentListView.getItems().setAll(comments);
+            commentsContainer.getChildren().clear();
+            java.util.List<Comment> allComments = commentService.getCommentsByPost(currentPostId);
+            
+            // Organize comments by parent
+            java.util.Map<Long, java.util.List<Comment>> childrenMap = new java.util.HashMap<>();
+            java.util.List<Comment> rootComments = new java.util.ArrayList<>();
+            
+            for (Comment c : allComments) {
+                if (c.getParentId() == null || c.getParentId() == 0) {
+                    rootComments.add(c);
+                } else {
+                    childrenMap.computeIfAbsent(c.getParentId(), k -> new java.util.ArrayList<>()).add(c);
+                }
+            }
+            
+            for (Comment root : rootComments) {
+                renderComment(root, childrenMap, 0);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void renderComment(Comment comment, java.util.Map<Long, java.util.List<Comment>> childrenMap, int depth) {
+        VBox commentBox = new VBox(5);
+        commentBox.setPadding(new Insets(10, 0, 10, depth * 20));
+        commentBox.setStyle("-fx-border-color: #eee; -fx-border-width: 0 0 1 0;");
+        
+        Label userLabel = new Label(comment.getUsername());
+        userLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+        
+        Label contentLabel = new Label(comment.getText());
+        contentLabel.setWrapText(true);
+        contentLabel.setStyle("-fx-font-size: 14px;");
+        
+        Button btnReply = new Button("Responder");
+        btnReply.setStyle("-fx-background-color: transparent; -fx-text-fill: #065fd4; -fx-cursor: hand; -fx-padding: 2 0 2 0; -fx-font-weight: bold;");
+        
+        VBox replyArea = new VBox(5);
+        replyArea.setVisible(false);
+        replyArea.setManaged(false);
+        
+        TextField replyInput = new TextField();
+        replyInput.setPromptText("Adicione uma resposta...");
+        Button btnSendReply = new Button("Responder");
+        btnSendReply.setStyle("-fx-background-color: #065fd4; -fx-text-fill: white;");
+        
+        btnSendReply.setOnAction(e -> {
+            String text = replyInput.getText();
+            if (text != null && !text.trim().isEmpty()) {
+                try {
+                    commentService.createReply(currentPostId, comment.getId(), text);
+                    loadComments();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        
+        replyArea.getChildren().addAll(replyInput, btnSendReply);
+        
+        btnReply.setOnAction(e -> {
+            replyArea.setVisible(!replyArea.isVisible());
+            replyArea.setManaged(replyArea.isVisible());
+        });
+        
+        commentBox.getChildren().addAll(userLabel, contentLabel, btnReply, replyArea);
+        commentsContainer.getChildren().add(commentBox);
+        
+        if (childrenMap.containsKey(comment.getId())) {
+            for (Comment child : childrenMap.get(comment.getId())) {
+                renderComment(child, childrenMap, depth + 1);
+            }
         }
     }
 

@@ -81,7 +81,7 @@ public class CreatePostController {
     }
 
     @FXML
-    private void aoClicarPublicar() {
+    private void onPublishClick() {
         if (activeTask != null && activeTask.isRunning()) {
             return;
         }

@@ -57,7 +57,7 @@
             <Separator />
 
             <HBox spacing="20" alignment="CENTER">
-                <Button onAction="#aoClicarPublicar" prefWidth="150.0" prefHeight="40.0" text="Publicar" style="-fx-base: #28a745; -fx-text-fill: white;" />
+                <Button onAction="#onPublishClick" prefWidth="150.0" prefHeight="40.0" text="Publicar" style="-fx-base: #28a745; -fx-text-fill: white;" />
                 <Button onAction="#backToStudio" prefWidth="150.0" prefHeight="40.0" text="Cancelar" />
             </HBox>
             

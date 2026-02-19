@@ -11,6 +11,7 @@ public class User{
 	private String username;
 	private String email;
 	private String passwordHash;
+	private String profilePictureUrl;
 	private Role role;
 
 	private List<UserChannel> participations;
@@ -20,6 +21,15 @@ public class User{
 		this.email = email;
 		this.passwordHash = password;
 		this.name = name;
+	}
+
+	public User(long id, String email, String username, String name, String password, String profilePictureUrl) {
+		this.id = id;
+		this.email = email;
+		this.passwordHash = password;
+		this.name = name;
+		this.username = username;
+		this.profilePictureUrl = profilePictureUrl;
 	}
 	
 	public User(String email, String password, String username, String name) {
@@ -58,6 +68,12 @@ public class User{
 	}
 	public void setPassword(String password) {
 		this.passwordHash = password;
+	}
+	public String getProfilePictureUrl() {
+		return profilePictureUrl;
+	}
+	public void setProfilePictureUrl(String profilePictureUrl) {
+		this.profilePictureUrl = profilePictureUrl;
 	}
 	public Role getRole() {
 		return role;

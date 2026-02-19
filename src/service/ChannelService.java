@@ -17,9 +17,9 @@ public class ChannelService {
 		this.userChannelService = userChannelService;
 	}
 	
-	public void create(String name) {
+	public void create(String name, String profilePictureUrl) {
 		
-		Channel newChannel = channelDao.save(name);
+		Channel newChannel = channelDao.save(name, profilePictureUrl);
 		userChannelService.addUserToChannelCreation(UserSession.getUser().getId(),
 				newChannel.getId(),
 				Role.OWNER
@@ -31,7 +31,7 @@ public class ChannelService {
 	}
 
 	public Channel getChannelById(long id) {
-		return channelDao.findById(id);
+		return channelDao.findById(id, UserSession.getUser() != null ? UserSession.getUser().getId() : -1);
 	}
 	
 }

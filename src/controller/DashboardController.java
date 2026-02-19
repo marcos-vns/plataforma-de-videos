@@ -25,6 +25,7 @@ public class DashboardController {
     @FXML private Menu channelsSubMenu;
     @FXML private FlowPane postsGrid;
     @FXML private Label sectionTitle;
+    @FXML private javafx.scene.image.ImageView userProfilePic;
 
     private ChannelService channelService;
     private UserChannelService userChannelService;
@@ -52,6 +53,15 @@ public class DashboardController {
     private void loadInitialData() {
         if (UserSession.getUser() != null) {
             userMenuButton.setText(UserSession.getUser().getUsername());
+            
+            String picUrl = UserSession.getUser().getProfilePictureUrl();
+            if (picUrl != null && !picUrl.isEmpty()) {
+                java.io.File file = new java.io.File("storage", picUrl);
+                if (file.exists()) {
+                    userProfilePic.setImage(new javafx.scene.image.Image(file.toURI().toString()));
+                }
+            }
+            
             loadUserChannelsMenu();
         }
         loadAllPosts();
@@ -85,7 +95,7 @@ public class DashboardController {
                     continue;
                 }
                 Channel channel = channelService.getChannelById(post.getChannelId());
-                controller.setData(post, channel != null ? channel.getName() : "Canal Desconhecido");
+                controller.setData(post, channel);
                 
                 postsGrid.getChildren().add(card);
             } catch (Exception e) {
@@ -99,7 +109,11 @@ public class DashboardController {
         channelsSubMenu.getItems().clear();
         var channels = channelService.findChannelsByUser(UserSession.getUser().getId());
         for (Channel channel : channels) {
-            MenuItem item = new MenuItem(channel.getName());
+            String label = channel.getName();
+            if (channel.getCurrentUserRole() != null) {
+                label += " (" + channel.getCurrentUserRole().name() + ")";
+            }
+            MenuItem item = new MenuItem(label);
             item.setOnAction(e -> SceneManager.showStudioScene(channel));
             channelsSubMenu.getItems().add(item);
         }
@@ -150,7 +164,7 @@ public class DashboardController {
             userDialog.setContentText("Username do usuário:");
             
             userDialog.showAndWait().ifPresent(username -> {
-                ChoiceDialog<Role> roleDialog = new ChoiceDialog<>(Role.EDITOR, List.of(Role.EDITOR, Role.MODERATOR));
+                ChoiceDialog<Role> roleDialog = new ChoiceDialog<>(Role.EDITOR, List.of(Role.OWNER, Role.EDITOR, Role.MODERATOR));
                 roleDialog.setTitle("Adicionar Membro");
                 roleDialog.setHeaderText("Selecione o cargo para " + username);
                 roleDialog.setContentText("Cargo:");
@@ -194,6 +208,35 @@ public class DashboardController {
         }
     }
     
+    @FXML
+    private void handleCreateChannel() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Criar Canal");
+        dialog.setHeaderText("Crie seu novo canal");
+        dialog.setContentText("Nome do canal:");
+
+        dialog.showAndWait().ifPresent(name -> {
+            if (name.trim().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("O nome do canal não pode estar vazio.");
+                alert.showAndWait();
+                return;
+            }
+
+            try {
+                channelService.create(name, null); // For now, no profile pic during creation
+                loadUserChannelsMenu(); // Refresh menu
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("Canal '" + name + "' criado com sucesso!");
+                alert.showAndWait();
+            } catch (Exception e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Erro ao criar canal: " + e.getMessage());
+                alert.showAndWait();
+            }
+        });
+    }
+
     @FXML
     private void logout() {
     	authenticationService.logout();

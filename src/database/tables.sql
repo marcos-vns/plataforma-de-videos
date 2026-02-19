@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS UserAccount (
     name VARCHAR(100) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    profile_picture_url VARCHAR(255)
 );
 
 -- ================================
@@ -18,7 +19,8 @@ CREATE TABLE IF NOT EXISTS UserAccount (
 CREATE TABLE IF NOT EXISTS channels (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    subscribers BIGINT DEFAULT 0
+    subscribers BIGINT DEFAULT 0,
+    profile_picture_url VARCHAR(255)
 );
 
 -- ================================
@@ -52,7 +54,7 @@ CREATE TABLE IF NOT EXISTS posts (
     likes INT DEFAULT 0,
     dislikes INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    post_type ENUM('VIDEO', 'TEXTO') NOT NULL,
+    post_type ENUM('VIDEO', 'TEXT') NOT NULL,
     
     CONSTRAINT fk_posts_channel 
         FOREIGN KEY (channel_id) 
@@ -78,11 +80,11 @@ CREATE TABLE IF NOT EXISTS videos (
 );
 
 -- ================================
--- TABELA: posts_texto
+-- TABELA: text_posts
 -- ================================
-CREATE TABLE IF NOT EXISTS posts_texto (
+CREATE TABLE IF NOT EXISTS text_posts (
     post_id INT PRIMARY KEY,
-    conteudo TEXT NOT NULL,
+    content TEXT NOT NULL,
     
     CONSTRAINT fk_text_post
         FOREIGN KEY (post_id) 
@@ -110,7 +112,9 @@ CREATE TABLE IF NOT EXISTS comments (
     post_id INT NOT NULL,
     user_id INT NOT NULL,
     text TEXT NOT NULL,
+    parent_id INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
 );

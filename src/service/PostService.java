@@ -30,7 +30,7 @@ public class PostService {
 
         // 2. Validações Específicas (Especialização)
         if (post instanceof Video) {
-            validarVideo((Video) post);
+            validateVideo((Video) post);
         } else if (post instanceof TextPost) {
             validateText((TextPost) post);
         }
@@ -39,7 +39,7 @@ public class PostService {
         postDAO.save(post);
     }
 
-    private void validarVideo(Video video) {
+    private void validateVideo(Video video) {
         if (video.getVideoUrl() == null || video.getVideoUrl().isEmpty()) {
             throw new IllegalArgumentException("O arquivo de vídeo é obrigatório.");
         }
@@ -80,6 +80,13 @@ public class PostService {
 
                 public void toggleLike(long userId, long postId, boolean isLike) throws SQLException {
                     postDAO.toggleLike(userId, postId, isLike);
+                }
+
+                public void incrementViews(long postId) throws SQLException {
+                    if (!UserSession.hasViewed(postId)) {
+                        postDAO.incrementViews(postId);
+                        UserSession.markAsViewed(postId);
+                    }
                 }
 
                 public Boolean getUserReaction(long userId, long postId) throws SQLException {

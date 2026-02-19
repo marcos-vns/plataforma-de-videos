@@ -12,7 +12,7 @@ public class UserService {
 		this.userDao = userDao;
 	}
 
-	public void register(String email, String password, String username, String name) {
+	public void register(String email, String password, String username, String name, String profilePictureUrl) {
 		
 		if (userDao.findByEmail(email) != null) {
 	        throw new RuntimeException("Email ja cadastrado");
@@ -25,6 +25,7 @@ public class UserService {
 	    String hash = PasswordService.hashPassword(password);
 		
 		User newUser = new User(email, hash, username, name);
+		newUser.setProfilePictureUrl(profilePictureUrl);
 		userDao.save(newUser);
 	}
 	

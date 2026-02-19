@@ -30,6 +30,24 @@ public class CommentService {
         commentDAO.save(comment);
     }
 
+    public void createReply(long postId, long parentId, String text) throws SQLException {
+        User user = UserSession.getUser();
+        if (user == null) {
+            throw new RuntimeException("Usuário deve estar logado para responder.");
+        }
+        if (text == null || text.trim().isEmpty()) {
+            throw new RuntimeException("A resposta não pode estar vazia.");
+        }
+
+        Comment reply = new Comment();
+        reply.setPostId(postId);
+        reply.setUserId(user.getId());
+        reply.setText(text);
+        reply.setParentId(parentId);
+        
+        commentDAO.save(reply);
+    }
+
     public List<Comment> getCommentsByPost(long postId) throws SQLException {
         return commentDAO.findByPostId(postId);
     }
