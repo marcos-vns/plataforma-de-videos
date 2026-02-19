@@ -1,11 +1,60 @@
 package daos;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import database.DatabaseConnection;
+import model.Comment;
+
 public class CommentDAO {
 
-	public void post(Connection conn)
-	
-	public void edit(Connection conn)
-	
-	public void remove(Connection conn)
-	
+    public void save(Comment comment) throws SQLException {
+        String sql = "INSERT INTO comments (post_id, user_id, text) VALUES (?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setLong(1, comment.getPostId());
+            ps.setLong(2, comment.getUserId());
+            ps.setString(3, comment.getText());
+            ps.executeUpdate();
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    comment.setId(generatedKeys.getLong(1));
+                }
+            }
+        }
+    }
+
+    public List<Comment> findByPostId(long postId) throws SQLException {
+        List<Comment> comments = new ArrayList<>();
+        String sql = "SELECT c.*, u.username FROM comments c " +
+                     "JOIN UserAccount u ON c.user_id = u.id " +
+                     "WHERE c.post_id = ? ORDER BY c.created_at DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, postId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Comment comment = new Comment();
+                    comment.setId(rs.getLong("id"));
+                    comment.setPostId(rs.getLong("post_id"));
+                    comment.setUserId(rs.getLong("user_id"));
+                    comment.setText(rs.getString("text"));
+                    comment.setCreatedAt(rs.getTimestamp("created_at"));
+                    comment.setUsername(rs.getString("username"));
+                    comments.add(comment);
+                }
+            }
+        }
+        return comments;
+    }
+
+    public void delete(long id) throws SQLException {
+        String sql = "DELETE FROM comments WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            ps.executeUpdate();
+        }
+    }
 }

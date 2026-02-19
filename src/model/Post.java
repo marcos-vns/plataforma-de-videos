@@ -7,6 +7,8 @@ public abstract class Post {
     private String title;
     private String thumbnailUrl;
     private PostType tipoPost; // Enum: VIDEO, TEXTO
+    private int likes;
+    private int dislikes;
     
 	public Long getId() {
 		return id;
@@ -38,6 +40,21 @@ public abstract class Post {
 	public void setTipoPost(PostType tipoPost) {
 		this.tipoPost = tipoPost;
 	}
-
-    
+    public int getLikes() {
+        return likes;
+    }
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+    public int getDislikes() {
+        return dislikes;
+    }
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
+    }
+	
+    @Override
+    public String toString() {
+        return "[" + tipoPost + "] " + title;
+    }
 }

@@ -1,44 +1,123 @@
 package database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.SQLException;
 
 public class SqlTables {
 
-public void createTables() throws SQLException{
-    	
-    	if(DatabaseConnection.isDataSourceNull()) {
-    		throw new SQLException("Conaxao não foi inicializada ainda");
-    	}
-    	
-    	String[] sql = {"CREATE TABLE IF NOT EXISTS UserAccount(\n"
-                + "\tid INT PRIMARY KEY AUTO_INCREMENT,\n"
-                + "\tname VARCHAR(100) NOT NULL,\n"
-                + "\tusername VARCHAR(50) NOT NULL UNIQUE,\n"
-                + "\temail VARCHAR(100) NOT NULL UNIQUE,\n"
-                + "\tpassword VARCHAR(255) NOT NULL\n"
-                + ");\n", 
-                
-                "CREATE TABLE IF NOT EXISTS Channel(\n"
-                + "\tid INT PRIMARY KEY AUTO_INCREMENT,\n"
-                + "\tname VARCHAR(100) NOT NULL,\n"
-                + "\tsubscribers BIGINT DEFAULT 0\n"
-                + ");\n", 
-                
-                "CREATE TABLE IF NOT EXISTS UserChannel(\n"
-                + "\tuserid INT,\n"
-                + "\tchannelid INT,\n"
-                + "\trole ENUM('owner', 'editor', 'moderator') NOT NULL,\n"
-                + "\tPRIMARY KEY (userid, channelid),\n"
-                + "\tFOREIGN KEY (userid) ADD CONSTRAINT fk_useraccountid REFERENCES UserAccount(id) ON DELETE CASCADE,\n"
-                + "\tFOREIGN KEY (channelid) ADD CONSTRAINT fk_channelid REFERENCES Channel(id) ON DELETE CASCADE\n"
-                + ");"};
+    public void createTables() throws SQLException {
+        
+        if(DatabaseConnection.isDataSourceNull()) {
+            throw new SQLException("Conexão não foi inicializada ainda");
+        }
+        
+        String[] tableNames = {"UserAccount", "channels", "user_channel", "posts", "videos", "posts_texto"};
+        String[] sql = {
+            """
+            CREATE TABLE IF NOT EXISTS UserAccount(
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(100) NOT NULL,
+                username VARCHAR(50) NOT NULL UNIQUE,
+                email VARCHAR(100) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL
+            );
+            """, 
+            
+            """
+            CREATE TABLE IF NOT EXISTS channels(
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(100) NOT NULL,
+                subscribers BIGINT DEFAULT 0
+            );
+            """, 
+            
+            """
+            CREATE TABLE IF NOT EXISTS user_channel(
+                user_id INT,
+                channel_id INT,
+                role ENUM('owner', 'editor', 'moderator') NOT NULL,
+                PRIMARY KEY (user_id, channel_id),
+                FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE,
+                FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE
+            );
+            """,
 
-        for(String statement : sql) {
-        	Connection conn = DatabaseConnection.getConnection();
-        	PreparedStatement ps = conn.prepareStatement(statement);
-            ps.execute();
+                        """
+                        CREATE TABLE IF NOT EXISTS posts(
+                            id INT PRIMARY KEY AUTO_INCREMENT,
+                            channel_id INT NOT NULL,
+                            title VARCHAR(255) NOT NULL,
+                            thumbnail_url VARCHAR(255),
+                            likes INT DEFAULT 0,
+                            dislikes INT DEFAULT 0,
+                            post_type ENUM('VIDEO', 'TEXTO') NOT NULL,
+                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                            FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE
+                        );
+                        """, 
+                        """
+            CREATE TABLE IF NOT EXISTS videos(
+                post_id INT PRIMARY KEY,
+                description TEXT,
+                duration_seconds INT NOT NULL,
+                video_url VARCHAR(255) NOT NULL,
+                video_category ENUM('LONG', 'SHORT') NOT NULL,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+            );
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS posts_texto(
+                post_id INT PRIMARY KEY,
+                conteudo TEXT NOT NULL,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+            );
+            """,
+            
+            """
+            CREATE TABLE IF NOT EXISTS post_likes (
+                user_id INT,
+                post_id INT,
+                is_like BOOLEAN,
+                PRIMARY KEY (user_id, post_id),
+                FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+            );
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS comments (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                post_id INT NOT NULL,
+                user_id INT NOT NULL,
+                text TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE
+            );
+            """
+        };
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // Migração rápida para likes/dislikes/description se a tabela já existir
+            try (Statement stmt = conn.createStatement()) {
+                try { stmt.execute("ALTER TABLE posts ADD COLUMN likes INT DEFAULT 0"); } catch (SQLException ignored) {}
+                try { stmt.execute("ALTER TABLE posts ADD COLUMN dislikes INT DEFAULT 0"); } catch (SQLException ignored) {}
+                try { stmt.execute("ALTER TABLE posts ADD COLUMN description TEXT"); } catch (SQLException ignored) {}
+            }
+
+            String[] tableNamesWithComments = {"UserAccount", "channels", "user_channel", "posts", "videos", "posts_texto", "post_likes", "comments"};
+            for(int i = 0; i < sql.length; i++) {
+                System.out.println("Verificando/Criando tabela: " + tableNamesWithComments[i]);
+                try (PreparedStatement ps = conn.prepareStatement(sql[i])) {
+                    ps.execute();
+                }
+            }
+            System.out.println("Todas as tabelas foram processadas com sucesso.");
+        } catch (SQLException e) {
+            System.err.println("Erro crítico ao criar tabelas: " + e.getMessage());
+            throw e;
         }
     }
-	
 }

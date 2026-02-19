@@ -36,6 +36,9 @@ public class Channel {
 	public void setSubscribers(long subscribers) {
 		this.subscribers = subscribers;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

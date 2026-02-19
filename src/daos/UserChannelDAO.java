@@ -13,10 +13,9 @@ public class UserChannelDAO {
 	
 	public void save(long userId, long channelId, Role role) {
 
-			String sql = "INSERT INTO UserChannel (userid, channelid, role) VALUES (?, ?, ?)";
+			String sql = "INSERT INTO user_channel (user_id, channel_id, role) VALUES (?, ?, ?)";
 			
 			try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
-
 				ps.setLong(1, userId);
 				ps.setLong(2, channelId);
 				ps.setString(3, role.name());
@@ -31,7 +30,7 @@ public class UserChannelDAO {
 	
 	public boolean exists(long userId, long channelId) {
 		
-		String sql = "SELECT userid, channelid from UserChannel WHERE userid = ? AND channelid = ?";
+		String sql = "SELECT user_id, channel_id from user_channel WHERE user_id = ? AND channel_id = ?";
 		
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
 
@@ -52,19 +51,23 @@ public class UserChannelDAO {
 	
 	public boolean hasPermission(long userId, long channelId, Role role) {
 		
-		String sql = "SELECT * from UserChannel WHERE userid = ? AND channelid = ?";
+		System.out.println(role.name());
+		
+		String sql = "SELECT role from user_channel WHERE user_id = ? AND channel_id = ?";
 		
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
-
+			
 			ps.setLong(1, userId);
 			ps.setLong(2, channelId);
-			ps.setString(3, role.name());
 			
 			ResultSet rs = ps.executeQuery();
 			
 			if(rs.next()) {
-				boolean isOwner = rs.getString("role") == "OWNER";
-				if(isOwner) { return true; };
+				
+				if (rs.getString(1).equals(role.name())) {
+					return true;
+				}
+				
 			}
 
 		} catch (SQLException e) {

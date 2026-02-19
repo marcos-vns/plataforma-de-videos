@@ -29,5 +29,9 @@ public class ChannelService {
 	public List<Channel> findChannelsByUser(long userId) {
 		return channelDao.findByUser(userId);
 	}
+
+	public Channel getChannelById(long id) {
+		return channelDao.findById(id);
+	}
 	
 }

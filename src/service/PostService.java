@@ -43,7 +43,7 @@ public class PostService {
         if (video.getVideoUrl() == null || video.getVideoUrl().isEmpty()) {
             throw new IllegalArgumentException("O arquivo de vídeo é obrigatório.");
         }
-        if (video.getDurationSeconds() == null || video.getDurationSeconds() <= 0) {
+        if (video.getDurationSeconds() == null || video.getDurationSeconds() < 0) {
             throw new IllegalArgumentException("A duração do vídeo é inválida.");
         }
         
@@ -56,9 +56,34 @@ public class PostService {
         }
     }
 
-    private void validateText(TextPost text) {
-        if (text.getContent() == null || text.getContent().length() < 10) {
-            throw new IllegalArgumentException("O conteúdo do texto deve ter pelo menos 10 caracteres.");
+        private void validateText(TextPost text) {
+            if (text.getContent() == null || text.getContent().length() < 10) {
+                throw new IllegalArgumentException("O conteúdo do texto deve ter pelo menos 10 caracteres.");
+            }
         }
+    
+            public java.util.List<Post> getAllPosts() throws SQLException {
+        return postDAO.findAll();
     }
-}
+
+    public java.util.List<Post> getPostsByChannel(long channelId) throws SQLException {
+                return postDAO.findAllByChannelId(channelId);
+            }
+        
+                public Post getPostById(long id) throws SQLException {
+                    return postDAO.findById(id);
+                }
+            
+                public void deletePost(long id) throws SQLException {
+                    postDAO.delete(id);
+                }
+
+                public void toggleLike(long userId, long postId, boolean isLike) throws SQLException {
+                    postDAO.toggleLike(userId, postId, isLike);
+                }
+
+                public Boolean getUserReaction(long userId, long postId) throws SQLException {
+                    return postDAO.getUserReaction(userId, postId);
+                }
+            }
+            

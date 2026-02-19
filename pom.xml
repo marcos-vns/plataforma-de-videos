@@ -3,6 +3,11 @@
   <groupId>plataforma-videos</groupId>
   <artifactId>plataforma-videos</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <javafx.version>25.0.2</javafx.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>23</maven.compiler.release>
+  </properties>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -17,57 +22,62 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>0.0.8</version>
         <configuration>
-          <release>23</release>
+            <mainClass>Main</mainClass>
+            <options>
+                <option>--add-exports</option>
+                <option>javafx.base/com.sun.javafx=ALL-UNNAMED</option>
+            </options>
         </configuration>
       </plugin>
     </plugins>
   </build>
- 	<dependencies>
-	 	<dependency>
-		    <groupId>org.openjfx</groupId>
-		    <artifactId>javafx-media</artifactId>
-		    <version>21</version>
-		</dependency>
- 		<dependency>
-		    <groupId>commons-logging</groupId>
-		    <artifactId>commons-logging</artifactId>
-		    <version>1.2</version>
-		</dependency>
- 		<dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-crypto</artifactId>
-		    <version>6.2.1</version>
-		</dependency>
-	 	<dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-crypto</artifactId>
-		    <version>6.2.3</version>
-		</dependency>
-	    <dependency>
-	        <groupId>com.zaxxer</groupId>
-	        <artifactId>HikariCP</artifactId>
-	        <version>5.1.0</version>
-	    </dependency>
-	    <dependency>
-	        <groupId>mysql</groupId>
-	        <artifactId>mysql-connector-java</artifactId>
-	        <version>8.0.33</version>
-	    </dependency>
-		    <dependency>
-		        <groupId>org.openjfx</groupId>
-		        <artifactId>javafx-controls</artifactId>
-		        <version>25</version>
-	    	</dependency>
-	    <dependency>
-	        <groupId>org.openjfx</groupId>
-	        <artifactId>javafx-fxml</artifactId>
-	        <version>25</version>
-	    </dependency>
-	    <dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-simple</artifactId>
-		    <version>2.0.12</version>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-fxml</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-media</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-crypto</artifactId>
+      <version>6.2.3</version>
+    </dependency>
+    <!-- Necessário para o Spring Security Crypto -->
+    <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>5.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>8.0.33</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.12</version>
+    </dependency>
+  </dependencies>
 </project>

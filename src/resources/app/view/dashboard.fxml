@@ -3,81 +3,80 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.DashboardController">
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardController">
 
     <!-- TOPO -->
     <top>
-        <HBox spacing="10">
+        <HBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-width: 0 0 1 0;">
             <padding>
-                <Insets top="15" right="15" bottom="15" left="15"/>
+                <Insets bottom="10" left="20" right="20" top="10" />
             </padding>
-
             <children>
-                <Label text="Painel do Usuário"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Logout" onAction="#logout"/>
+                <Label text="Streamly" textFill="BLUE">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+                
+                <Region HBox.hgrow="ALWAYS" />
+                
+                <HBox alignment="CENTER" maxWidth="600.0" prefWidth="400.0" spacing="0">
+                    <TextField fx:id="searchField" promptText="Pesquisar" HBox.hgrow="ALWAYS" 
+                               style="-fx-background-radius: 20 0 0 20; -fx-border-color: #ccc; -fx-border-radius: 20 0 0 20;" />
+                    <Button text="🔍" onAction="#handleSearch" 
+                            style="-fx-background-radius: 0 20 20 0; -fx-border-color: #ccc; -fx-border-radius: 0 20 20 0;" />
+                </HBox>
+                
+                <Region HBox.hgrow="ALWAYS" />
+
+                <MenuButton text="+" style="-fx-background-color: #f0f0f0; -fx-background-radius: 20; -fx-font-weight: bold;">
+                    <items>
+                        <MenuItem text="Criar Postagem" onAction="#enterStudio" />
+                        <MenuItem text="Adicionar Membro ao Canal" onAction="#handleAddMember" />
+                    </items>
+                </MenuButton>
+                
+                <MenuButton fx:id="userMenuButton" text="Usuário" style="-fx-background-color: transparent;">
+                    <items>
+                        <MenuItem text="Meus Canais" disable="true" style="-fx-font-weight: bold;"/>
+                        <SeparatorMenuItem />
+                        <!-- Dinamicamente adicionaremos canais aqui -->
+                        <Menu fx:id="channelsSubMenu" text="Trocar Canal" />
+                        <MenuItem text="Ver Histórico" onAction="#viewHistory" />
+                        <MenuItem text="Estúdio de Criação" onAction="#enterStudio" />
+                        <SeparatorMenuItem />
+                        <MenuItem text="Logout" onAction="#logout" />
+                    </items>
+                </MenuButton>
             </children>
         </HBox>
     </top>
 
     <!-- CONTEÚDO -->
     <center>
-        <VBox spacing="20">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
-
-            <children>
-
-                <!-- Criar canal -->
-                <TitledPane text="Criar Canal" expanded="true">
-                    <content>
-                        <VBox spacing="10">
-                            <padding>
-                                <Insets top="10" right="10" bottom="10" left="10"/>
-                            </padding>
-
+        <ScrollPane fitToWidth="true" style="-fx-background-color: #f9f9f9;">
+            <content>
+                <VBox spacing="20" alignment="TOP_CENTER">
+                    <padding>
+                        <Insets bottom="20" left="20" right="20" top="20" />
+                    </padding>
+                    <children>
+                        <Label fx:id="sectionTitle" text="Recomendados">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <VBox alignment="CENTER">
                             <children>
-                                <TextField fx:id="channelNameField"
-                                           promptText="Nome do canal"/>
-
-                                <Button text="Criar Canal"
-                                        onAction="#createChannel"/>
+                                <FlowPane fx:id="postsGrid" hgap="20" vgap="20" prefWrapLength="1200" alignment="TOP_LEFT" maxWidth="1200" />
                             </children>
                         </VBox>
-                    </content>
-                </TitledPane>
-
-                <!-- Gerenciar cargos -->
-                <TitledPane text="Adicionar usuário ao canal" expanded="true">
-                    <content>
-                        <VBox spacing="10">
-                            <padding>
-                                <Insets top="10" right="10" bottom="10" left="10"/>
-                            </padding>
-
-                            <children>
-                                <ComboBox fx:id="channelComboBox"
-                                          promptText="Selecione o canal"/>
-
-                                <TextField fx:id="usernameField"
-                                           promptText="Username do usuário"/>
-
-                                <ComboBox fx:id="roleComboBox"
-                                          promptText="Cargo"/>
-
-                                <Button text="Adicionar ao canal"
-                                        onAction="#addUserToChannel"/>
-                            </children>
-                        </VBox>
-                    </content>
-                </TitledPane>
-
-            </children>
-        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
 
 </BorderPane>

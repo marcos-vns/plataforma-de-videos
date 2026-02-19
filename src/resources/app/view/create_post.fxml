@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CreatePostController">
+   <children>
+      <VBox alignment="CENTER" layoutX="400.0" layoutY="50.0" prefWidth="480.0" spacing="15.0">
+         <children>
+            <Label text="Nova Publicação">
+               <font>
+                  <Font name="System Bold" size="28.0" />
+               </font>
+            </Label>
+
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Tipo de Post:" />
+                <ComboBox fx:id="comboPostType" onAction="#onTypeChange" prefWidth="150.0" />
+            </HBox>
+
+            <Separator />
+
+            <VBox spacing="10">
+                <Label text="Título" />
+                <TextField fx:id="txtTitle" promptText="Digite o título da publicação" />
+            </VBox>
+
+            <!-- Comum para ambos: Miniatura -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button onAction="#selectThumbnail" text="Selecionar Miniatura" />
+                <Label fx:id="lblThumbStatus" text="Nenhuma imagem" textFill="#666666" />
+            </HBox>
+
+            <!-- Seção de VÍDEO -->
+            <VBox fx:id="videoSection" spacing="10">
+                <children>
+                    <Label text="Descrição do Vídeo" />
+                    <TextArea fx:id="txtDescription" prefHeight="100.0" promptText="Opcional: Descreva seu vídeo" />
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Button onAction="#selectVideo" text="Selecionar Arquivo (.mp4)" />
+                        <Label fx:id="lblVideoStatus" text="Nenhum arquivo" textFill="#666666" />
+                    </HBox>
+                </children>
+            </VBox>
+
+            <!-- Seção de TEXTO -->
+            <VBox fx:id="textSection" spacing="10" managed="false" visible="false">
+                <children>
+                    <Label text="Conteúdo da Publicação" />
+                    <TextArea fx:id="txtContent" prefHeight="200.0" promptText="Escreva o conteúdo do seu post de texto..." />
+                </children>
+            </VBox>
+
+            <Separator />
+
+            <HBox spacing="20" alignment="CENTER">
+                <Button onAction="#aoClicarPublicar" prefWidth="150.0" prefHeight="40.0" text="Publicar" style="-fx-base: #28a745; -fx-text-fill: white;" />
+                <Button onAction="#backToStudio" prefWidth="150.0" prefHeight="40.0" text="Cancelar" />
+            </HBox>
+            
+            <Label fx:id="lblStatus" text="" textFill="#d32f2f" wrapText="true" />
+         </children>
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>

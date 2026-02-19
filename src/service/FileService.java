@@ -38,20 +38,45 @@ public class FileService {
         if (arquivoOriginal == null) return null;
 
         // 1. Gerar nome único
-        String extensao = getExtension(arquivoOriginal.getName());
+        String extensao = tipo.equals("VIDEO") ? ".mp4" : getExtension(arquivoOriginal.getName());
         String novoNome = UUID.randomUUID().toString() + extensao;
 
         // 2. Definir pasta de destino
         String subPasta = tipo.equals("VIDEO") ? PASTA_VIDEOS : PASTA_THUMBNAILS;
         Path destino = Paths.get(DIRETORIO_BASE, subPasta, novoNome);
 
-        // 3. Copiar o arquivo
-        Files.copy(arquivoOriginal.toPath(), destino, StandardCopyOption.REPLACE_EXISTING);
+        // 3. Processar ou copiar o arquivo
+        if (tipo.equals("VIDEO")) {
+            convertVideo(arquivoOriginal, destino.toFile());
+        } else {
+            Files.copy(arquivoOriginal.toPath(), destino, StandardCopyOption.REPLACE_EXISTING);
+        }
 
         // 4. Retornar o caminho relativo (para salvar no banco)
-        // No Windows usará backslash (\), no Linux slash (/). 
-        // É bom padronizar para / se for exibir na web depois, mas localmente o File separator está ok.
         return subPasta + File.separator + novoNome;
+    }
+
+    private void convertVideo(File input, File output) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder(
+            "ffmpeg", "-i", input.getAbsolutePath(),
+            "-c:v", "libx264", "-profile:v", "high", "-pix_fmt", "yuv420p",
+            "-c:a", "aac", "-movflags", "+faststart",
+            "-y", // Sobrescrever se existir
+            output.getAbsolutePath()
+        );
+        
+        pb.inheritIO(); // Redireciona log para o console do Java
+        
+        try {
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new IOException("FFmpeg falhou com código: " + exitCode);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Conversão interrompida", e);
+        }
     }
 
     private String getExtension(String fileName) {

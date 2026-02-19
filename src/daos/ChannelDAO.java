@@ -12,57 +12,52 @@ import database.DatabaseConnection;
 import model.Channel;
 
 public class ChannelDAO {
-	
-	private Connection connection;
 
-    public Channel save(String channelName){
+	public Channel save(String channelName) {
 
-        String sql = "INSERT INTO Channel (name) VALUES (?)";
+	    String sql = "INSERT INTO channels (name) VALUES (?)";
 
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+	    try (Connection conn = DatabaseConnection.getConnection(); 
+	         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, channelName);
+	        ps.setString(1, channelName);
 
-            ps.executeUpdate();
-            
-            ResultSet rs = ps.getGeneratedKeys();
-            
-            if(rs.next()) {
-            	return new Channel(
-            			rs.getLong("id"),
-            			rs.getString("name")
-            		);
-            }
+	        int affectedRows = ps.executeUpdate();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        return null;
+	        if (affectedRows > 0) {
+	            try (ResultSet rs = ps.getGeneratedKeys()) {
+	                if (rs.next()) {
+	                    // 1. Pegue o ID pelo índice 1 (primeira coluna do retorno)
+	                    long idGerado = rs.getLong(1);
+	                    
+	                    // 2. Use o 'channelName' que veio do parâmetro, não do ResultSet
+	                    return new Channel(idGerado, channelName);
+	                }
+	            }
+	        }
 
-    }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
     
-    public void find(long id) {
-    	
-    	String sql = "SELECT name, subscribers FROM Channel WHERE id = ?";
-
+    public Channel findById(long id) {
+    	String sql = "SELECT name, subscribers FROM channels WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)){
-        	
         	ps.setLong(1, id);
-        	
             ResultSet rs = ps.executeQuery();
-            
             if(rs.next()) {
-            	String name = rs.getString("name");
-            	long subscribers = rs.getLong("subscribers");
-            	
-            	System.out.println("Nome: " + name + "\nInscritos: " + subscribers);
+                Channel channel = new Channel(id, rs.getString("name"));
+                // Note: Channel model might not have subscribers field yet, 
+                // but we can at least return the name.
+                return channel;
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    	
+        return null;
     }
     
     public List<Channel> findByUser(long userId) {
@@ -71,9 +66,9 @@ public class ChannelDAO {
 
         String sql = """
             SELECT c.id, c.name
-            FROM Channel c
-            JOIN UserChannel uc ON uc.channelid = c.id
-            WHERE uc.userid = ?
+            FROM channels c
+            JOIN user_channel uc ON uc.channel_id = c.id
+            WHERE uc.user_id = ?
         """;
 
         try (Connection conn = DatabaseConnection.getConnection();

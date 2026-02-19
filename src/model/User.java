@@ -66,19 +66,4 @@ public class User{
 		this.role = role;
 	}
 
-	public void createChannel(Connection conn, String channelName) {
-		
-		ChannelDAO channelDAO = new ChannelDAO();
-		Channel channel = channelDAO.save(conn, channelName);
-		
-		UserChannelDAO userChannelDAO = new UserChannelDAO();
-		UserChannel participation = new UserChannel();
-		participation.setChannel(channel);
-		participation.setUser(this);
-		participation.setRole(Role.OWNER);
-		
-		userChannelDAO.save(conn, participation);
-		
-	}
-
 }

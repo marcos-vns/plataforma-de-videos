@@ -16,7 +16,9 @@ import database.DatabaseConnection;
 import model.User;
 import service.AuthenticationService;
 import service.ChannelService;
+import service.CommentService;
 import service.FileService;
+import service.PostService;
 import service.UserChannelService;
 
 public class Main extends Application {
@@ -25,6 +27,13 @@ public class Main extends Application {
 	public void start(Stage stage) throws Exception {
 
 	    DatabaseConnection.init();
+	    
+	    // Garantir que as tabelas existem
+	    try {
+	        new database.SqlTables().createTables();
+	    } catch (SQLException e) {
+	        System.err.println("Erro ao criar tabelas: " + e.getMessage());
+	    }
 
 	    // DAOs
 	    UserDAO userDao = new UserDAO();
@@ -42,15 +51,20 @@ public class Main extends Application {
 	    ChannelService channelService =
 	            new ChannelService(channelDao, userChannelService);
 
-	    FileService fileService = 
-	    		new FileService();
+	    FileService fileService = new FileService();
+	    
+	    PostService postService = new PostService();
+
+	    CommentService commentService = new CommentService();
 	    
 	    SceneManager.init(
 	            stage,
 	            authenticationService,
 	            channelService,
 	            userChannelService,
+	            postService,
 	            fileService,
+	            commentService
 	    );
 
 	    SceneManager.switchScene("/resources/app/view/login.fxml");
