@@ -354,6 +354,6 @@ public class StudioController {
 
     @FXML
     private void backToDashboard() {
-        SceneManager.switchScene("/resources/app/view/dashboard.fxml");
+        SceneManager.switchScene("/app/view/dashboard.fxml");
     }
 }

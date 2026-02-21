@@ -85,19 +85,19 @@ public class SceneManager {
     }
 
     public static void showCommentScene() {
-        switchScene("/resources/app/view/comment.fxml");
+        switchScene("/app/view/comment.fxml");
     }
 
     public static void showCreatePostScene() {
-        switchScene("/resources/app/view/create_post.fxml");
+        switchScene("/app/view/create_post.fxml");
     }
 
     public static void showStudioScene(Channel channel) {
         try {
-            URL url = getFXMLUrl("/resources/app/view/studio.fxml");
+            URL url = getFXMLUrl("/app/view/studio.fxml");
 
             if (url == null) {
-                throw new RuntimeException("FXML não encontrado: /resources/app/view/studio.fxml");
+                throw new RuntimeException("FXML não encontrado: /app/view/studio.fxml");
             }
 
             FXMLLoader loader = new FXMLLoader(url);
@@ -129,10 +129,10 @@ public class SceneManager {
 
     public static void showPostScene(long postId) {
         try {
-            URL url = getFXMLUrl("/resources/app/view/post.fxml");
+            URL url = getFXMLUrl("/app/view/post.fxml");
 
             if (url == null) {
-                throw new RuntimeException("FXML não encontrado: /resources/app/view/post.fxml");
+                throw new RuntimeException("FXML não encontrado: /app/view/post.fxml");
             }
 
             FXMLLoader loader = new FXMLLoader(url);
@@ -162,10 +162,10 @@ public class SceneManager {
 
     public static void showChannelScene(Channel channel) {
         try {
-            URL url = getFXMLUrl("/resources/app/view/channel.fxml");
+            URL url = getFXMLUrl("/app/view/channel.fxml");
 
             if (url == null) {
-                throw new RuntimeException("FXML não encontrado: /resources/app/view/channel.fxml");
+                throw new RuntimeException("FXML não encontrado: /app/view/channel.fxml");
             }
 
             FXMLLoader loader = new FXMLLoader(url);

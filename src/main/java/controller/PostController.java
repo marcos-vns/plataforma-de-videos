@@ -276,7 +276,7 @@ public class PostController {
         if (ChannelSession.hasSelectedChannel()) {
             SceneManager.showStudioScene(ChannelSession.getChannel());
         } else {
-            SceneManager.switchScene("/resources/app/view/dashboard.fxml");
+            SceneManager.switchScene("/app/view/dashboard.fxml");
         }
     }
 

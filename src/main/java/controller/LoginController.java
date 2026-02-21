@@ -33,7 +33,7 @@ public class LoginController {
     	
     	if(isLogged) {
     		try {
-    			SceneManager.switchScene("/resources/app/view/dashboard.fxml");
+    			SceneManager.switchScene("/app/view/dashboard.fxml");
     		} catch (Exception e) {
     			System.out.println("peeee");
     			e.printStackTrace();
@@ -43,7 +43,7 @@ public class LoginController {
     @FXML
     private void register() {
     	try {
-			SceneManager.switchScene("/resources/app/view/register.fxml");
+			SceneManager.switchScene("/app/view/register.fxml");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

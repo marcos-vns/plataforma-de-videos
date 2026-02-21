@@ -68,7 +68,7 @@ public class RegisterController {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setContentText("Usuário cadastrado com sucesso!");
             alert.showAndWait();
-            SceneManager.switchScene("/resources/app/view/login.fxml");
+            SceneManager.switchScene("/app/view/login.fxml");
             
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -86,7 +86,7 @@ public class DashboardController {
         postsGrid.getChildren().clear();
         for (Post post : posts) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/app/view/post_card.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/post_card.fxml"));
                 VBox card = loader.load();
                 
                 PostCardController controller = loader.getController();
@@ -241,7 +241,7 @@ public class DashboardController {
     private void logout() {
     	authenticationService.logout();
     	if(UserSession.getUser() == null) {
-    		SceneManager.switchScene("/resources/app/view/login.fxml");
+    		SceneManager.switchScene("/app/view/login.fxml");
     	}
     }
 }

@@ -125,7 +125,7 @@ public class ChannelController {
         contentGrid.getChildren().clear();
         for (Post post : posts) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/app/view/post_card.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/post_card.fxml"));
                 VBox card = loader.load();
                 PostCardController controller = loader.getController();
                 controller.setData(post, channel);
@@ -184,6 +184,6 @@ public class ChannelController {
     
     @FXML
     private void goBack() {
-        SceneManager.switchScene("/resources/app/view/dashboard.fxml");
+        SceneManager.switchScene("/app/view/dashboard.fxml");
     }
 }

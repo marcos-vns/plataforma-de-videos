@@ -1,3 +1,4 @@
+package app;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -64,9 +65,13 @@ public class Main extends Application {
 	            commentService
 	    );
 
-	    SceneManager.switchScene("/resources/app/view/login.fxml");
+	    SceneManager.switchScene("/app/view/login.fxml");
 
 	    stage.show();
+	}
+
+	public static void main(String[] args) {
+		Application.launch(Main.class, args);
 	}
 
 
