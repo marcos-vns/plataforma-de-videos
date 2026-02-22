@@ -83,10 +83,14 @@ public class Main extends Application {
                 watchHistoryService
 	    );
 
-	    SceneManager.switchScene("/app/view/login.fxml");
-
-	    stage.show();
-	}
+	            SceneManager.switchScene("/app/view/login.fxml");
+	    
+	            stage.setTitle("Streamly"); // Set the window title
+	            stage.setWidth(1280);      // Set the window width
+	            stage.setHeight(720);     // Set the window height
+	            stage.centerOnScreen();   // Center the window
+	    
+	            stage.show();	}
 
 	public static void main(String[] args) {
 		Application.launch(Main.class, args);

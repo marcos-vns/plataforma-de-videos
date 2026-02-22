@@ -1,0 +1,75 @@
+.root {
+    -fx-background-color: #f9f9f9;
+    -fx-font-family: "Consolas";
+}
+
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 30 40;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-max-width: 500px;
+}
+
+.form-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.form-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+}
+
+.form-field {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #ccc;
+    -fx-background-color: white;
+    -fx-padding: 5 15;
+    -fx-pref-height: 40;
+    -fx-font-size: 14px;
+}
+.form-field:focused {
+    -fx-border-color: #6a11cb;
+    -fx-border-width: 1.5px;
+}
+
+.btn-selecionar {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-pref-height: 40;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+}
+.btn-selecionar:hover {
+    -fx-background-color: #ececec;
+}
+
+.confirm-button {
+    -fx-background-color: #27ae60; /* Green from reference */
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+}
+.confirm-button:hover {
+    -fx-background-color: #2ecc71;
+}
+
+.cancel-button {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #333;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+}
+.cancel-button:hover {
+    -fx-background-color: #d0d0d0;
+}

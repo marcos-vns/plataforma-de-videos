@@ -1,32 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  STYLE MIGRATION LOG
+  Source reference: telasProjeto/src/application/view/main.fxml (telaCriarCanal)
+  Changes applied: 
+    - Linked create_channel.css stylesheet.
+    - Replaced the root VBox with a BorderPane to center the form content.
+    - Applied .form-container class to the main VBox to give it a card/pop-up appearance.
+    - Applied .form-title, .form-label, .form-field, .btn-selecionar, .confirm-button, and .cancel-button styles.
+    - Removed all inline styles.
+  Conflicts resolved: The original layout was a simple VBox. It was wrapped in a BorderPane to allow for proper centering and scaling, which is a necessary adaptation to match the reference design.
+  Pending (manual action required): None.
+-->
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CreateChannelController"
-      spacing="20" style="-fx-padding: 20;">
-    <Label text="Criar Novo Canal">
-        <font>
-            <Font name="System Bold" size="18.0"/>
-        </font>
-    </Label>
-
-    <HBox spacing="15" alignment="CENTER_LEFT">
-        <ImageView fx:id="profileImageView" fitHeight="80" fitWidth="80" preserveRatio="true"
-                   style="-fx-border-color: #ddd; -fx-border-radius: 40; -fx-background-radius: 40;"/>
-        <Button text="Escolher Foto" onAction="#chooseImage"/>
-    </HBox>
-
-    <VBox spacing="5">
-        <Label text="Nome do Canal"/>
-        <TextField fx:id="channelNameField" promptText="Digite o nome do seu canal"/>
-    </VBox>
-
-    <HBox spacing="10" alignment="CENTER_RIGHT">
-        <Button text="Cancelar" onAction="#cancel"/>
-        <Button text="Criar Canal" onAction="#createChannel" style="-fx-background-color: #007bff; -fx-text-fill: white;"/>
-    </HBox>
-</VBox>
+<BorderPane styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CreateChannelController">
+    <stylesheets>
+        <URL value="@css/create_channel.css" />
+    </stylesheets>
+    <center>
+        <VBox spacing="20" styleClass="form-container">
+            <children>
+                <Label styleClass="form-title" text="Criar Novo Canal" />
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <ImageView fx:id="profileImageView" fitHeight="80" fitWidth="80" preserveRatio="true" />
+                    <Button text="Escolher Foto" onAction="#chooseImage" styleClass="btn-selecionar" />
+                </HBox>
+                <VBox spacing="5">
+                    <Label styleClass="form-label" text="Nome do Canal" />
+                    <TextField fx:id="channelNameField" promptText="Digite o nome do seu canal" styleClass="form-field"/>
+                </VBox>
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button text="Cancelar" onAction="#cancel" styleClass="cancel-button"/>
+                    <Button text="Criar Canal" onAction="#createChannel" styleClass="confirm-button"/>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

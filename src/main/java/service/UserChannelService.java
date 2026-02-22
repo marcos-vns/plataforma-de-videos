@@ -20,11 +20,6 @@ public class UserChannelService {
 	}
 	
 	public void addUserToChannelCreation(long userId, long channelId, Role role) throws SQLException {
-		
-		if (userChannelDao.exists(userId, channelId)) {
-	        throw new RuntimeException("Usuario ja pertence ao canal");
-	    }
-
 	    userChannelDao.save(userId, channelId, role);
 	}
 	

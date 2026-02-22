@@ -1,73 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  STYLE MIGRATION LOG
+  Source reference: telasProjeto/src/application/view/main.fxml
+  Changes applied: 
+    - Linked dashboard.css stylesheet.
+    - Applied style classes to the root pane, top bar, app title, search components, and user menu buttons.
+    - Removed inline styles in favor of CSS classes.
+  Conflicts resolved: None. Structure preserved.
+  Pending (manual action required): The cards displayed in the FlowPane are styled in their own FXML files (e.g., post_card.fxml).
+-->
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.shape.Circle?>
+<?import java.net.URL?>
 <?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import java.lang.String?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardController">
-
+<BorderPane styleClass="root-pane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardController">
+    <stylesheets>
+        <URL value="@css/dashboard.css" />
+    </stylesheets>
     <!-- TOPO -->
     <top>
-        <HBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-width: 0 0 1 0;">
-            <padding>
-                <Insets bottom="10" left="20" right="20" top="10" />
-            </padding>
+        <HBox styleClass="top-bar">
             <children>
-                <Label text="Streamly" textFill="BLUE">
-                    <font>
-                        <Font name="System Bold" size="24.0" />
-                    </font>
-                </Label>
-                
+                <Label styleClass="app-title" text="Streamly" />
                 <Region HBox.hgrow="ALWAYS" />
-                
-                <HBox alignment="CENTER" maxWidth="600.0" prefWidth="400.0" spacing="0">
-                    <ChoiceBox fx:id="searchFilterChoiceBox" prefHeight="32.0" prefWidth="100.0" style="-fx-background-radius: 20 0 0 20; -fx-border-color: #ccc; -fx-border-radius: 20 0 0 20;">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Todos" />
-                                <String fx:value="Posts" />
-                                <String fx:value="Canais" />
-                            </FXCollections>
-                        </items>
-                    </ChoiceBox>
-                    <TextField fx:id="searchField" promptText="Pesquisar" HBox.hgrow="ALWAYS" 
-                               style="-fx-background-radius: 0; -fx-border-color: #ccc;" />
-                    <Button text="🔍" onAction="#handleSearch" 
-                            style="-fx-background-radius: 0 20 20 0; -fx-border-color: #ccc; -fx-border-radius: 0 20 20 0;" />
+                <HBox alignment="CENTER" maxWidth="600.0" prefWidth="400.0">
+                    <children>
+                        <ChoiceBox fx:id="searchFilterChoiceBox" styleClass="search-choice-box">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Todos" />
+                                    <String fx:value="Posts" />
+                                    <String fx:value="Canais" />
+                                </FXCollections>
+                            </items>
+                        </ChoiceBox>
+                        <TextField fx:id="searchField" promptText="Pesquisar" styleClass="search-field" HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleSearch" styleClass="search-button" text="🔍" />
+                    </children>
                 </HBox>
-                
                 <Region HBox.hgrow="ALWAYS" />
-
-                <MenuButton text="+" style="-fx-background-color: #f0f0f0; -fx-background-radius: 20; -fx-font-weight: bold;">
+                <MenuButton styleClass="icon-button" text="+">
                     <items>
-                        <MenuItem text="Criar Postagem" onAction="#enterStudio" />
-                        <MenuItem text="Adicionar Membro ao Canal" onAction="#handleAddMember" />
+                        <MenuItem onAction="#enterStudio" text="Criar Postagem" />
+                        <MenuItem onAction="#handleAddMember" text="Adicionar Membro ao Canal" />
                     </items>
                 </MenuButton>
-                
                 <HBox alignment="CENTER" spacing="10">
-                    <ImageView fx:id="userProfilePic" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fx:id="userProfilePic" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" styleClass="user-profile-pic">
                         <clip>
-                            <javafx.scene.shape.Circle centerX="16.0" centerY="16.0" radius="16.0" />
+                            <Circle centerX="16.0" centerY="16.0" radius="16.0" />
                         </clip>
                     </ImageView>
-                    <MenuButton fx:id="userMenuButton" text="Usuário" style="-fx-background-color: transparent;">
+                    <MenuButton fx:id="userMenuButton" styleClass="profile-menu-button" text="Usuário">
                         <items>
-                            <MenuItem text="Meus Canais" disable="true" style="-fx-font-weight: bold;"/>
-                            <MenuItem text="Criar Canal" onAction="#handleCreateChannel" />
+                            <MenuItem disable="true" style="-fx-font-weight: bold;" text="Meus Canais" />
+                            <MenuItem onAction="#handleCreateChannel" text="Criar Canal" />
                             <SeparatorMenuItem />
-                            <!-- Dinamicamente adicionaremos canais aqui -->
                             <Menu fx:id="channelsSubMenu" text="Trocar Canal" />
-                            <MenuItem text="Ver Histórico" onAction="#viewHistory" />
-                            <MenuItem text="Estúdio de Criação" onAction="#enterStudio" />
+                            <MenuItem onAction="#viewHistory" text="Ver Histórico" />
+                            <MenuItem onAction="#enterStudio" text="Estúdio de Criação" />
                             <SeparatorMenuItem />
-                            <MenuItem text="Logout" onAction="#logout" />
+                            <MenuItem onAction="#logout" text="Logout" />
                         </items>
                     </MenuButton>
                 </HBox>
@@ -77,29 +88,21 @@
 
     <!-- CONTEÚDO -->
     <center>
-        <ScrollPane fitToWidth="true" style="-fx-background-color: #f9f9f9;">
+        <ScrollPane fitToWidth="true" styleClass="content-area">
             <content>
-                <VBox spacing="20" alignment="TOP_CENTER">
+                <VBox alignment="TOP_CENTER" spacing="20">
                     <padding>
                         <Insets bottom="20" left="20" right="20" top="20" />
                     </padding>
                     <children>
-                        <Label fx:id="sectionTitle" text="Recomendados">
-                            <font>
-                                <Font name="System Bold" size="18.0" />
-                            </font>
-                        </Label>
-                        <VBox alignment="CENTER" spacing="10" visible="false" managed="false" fx:id="channelsSection">
-                            <Label text="Canais">
-                                <font>
-                                    <Font name="System Bold" size="18.0" />
-                                </font>
-                            </Label>
-                            <FlowPane fx:id="channelsGrid" hgap="20" vgap="20" prefWrapLength="1200" alignment="TOP_LEFT" maxWidth="1200" />
+                        <Label fx:id="sectionTitle" styleClass="section-title" text="Recomendados" />
+                        <VBox fx:id="channelsSection" alignment="CENTER" managed="false" spacing="10" visible="false">
+                            <Label styleClass="section-title" text="Canais" />
+                            <FlowPane fx:id="channelsGrid" alignment="TOP_LEFT" hgap="20" maxWidth="1200" prefWrapLength="1200" vgap="20" />
                         </VBox>
                         <VBox alignment="CENTER">
                             <children>
-                                <FlowPane fx:id="postsGrid" hgap="20" vgap="20" prefWrapLength="1200" alignment="TOP_LEFT" maxWidth="1200" />
+                                <FlowPane fx:id="postsGrid" alignment="TOP_LEFT" hgap="20" maxWidth="1200" prefWrapLength="1200" vgap="20" />
                             </children>
                         </VBox>
                     </children>

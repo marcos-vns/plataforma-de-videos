@@ -1,0 +1,131 @@
+/* --- Base and Layout --- */
+.root {
+    -fx-background-color: #f9f9f9;
+    -fx-font-family: "Consolas";
+}
+
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #6a11cb;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-border-color: #6a11cb;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-border-width: 1px;
+    -fx-padding: 5 15;
+}
+.back-button:hover {
+    -fx-background-color: #6a11cb;
+    -fx-text-fill: white;
+}
+
+.post-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* --- Media and Content --- */
+.media-container {
+    -fx-background-color: #000000;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 8);
+    -fx-max-width: 800px; /* Limit width */
+}
+.text-content-area {
+     -fx-background-color: white;
+     -fx-background-radius: 15;
+     -fx-padding: 20;
+     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 5);
+}
+
+/* --- Info and Stats --- */
+.info-box {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-padding: 10;
+}
+.info-box .content {
+    -fx-background-color: white;
+}
+
+.stats-label {
+    -fx-text-fill: #606060;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.action-button {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #333;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 5 15;
+}
+.action-button:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+/* --- Comments Section --- */
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.comment-input-field {
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #ddd;
+    -fx-background-color: #f9f9f9;
+    -fx-padding: 5 15;
+    -fx-pref-height: 38;
+}
+
+.comment-submit-button {
+    -fx-background-color: linear-gradient(to right, #6a11cb, #2575fc);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-padding: 10 25;
+}
+.comment-submit-button:hover {
+    -fx-background-color: linear-gradient(to right, #7b2ff7, #458aff);
+}
+
+.comments-list-container {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 15;
+}
+
+/* --- Comment Card (for comment.fxml) --- */
+.comment-card {
+    -fx-padding: 10;
+    -fx-border-color: transparent transparent #eee transparent;
+    -fx-border-width: 1;
+}
+
+.comment-username {
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-text-fill: #333;
+}
+
+.comment-date {
+    -fx-font-size: 11px;
+    -fx-text-fill: #888;
+}
+
+.comment-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555;
+}

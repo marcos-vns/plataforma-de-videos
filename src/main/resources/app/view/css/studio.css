@@ -1,0 +1,152 @@
+/* --- Base and Layout --- */
+.root {
+    -fx-background-color: #f9f9f9;
+    -fx-font-family: "Consolas";
+}
+
+/* --- Header --- */
+.header-container {
+    -fx-background-color: white;	
+    -fx-border-color: #ddd;
+    -fx-border-width: 0 0 1 0;
+}
+
+.studio-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6a11cb; 
+}
+
+.channel-name {
+    -fx-font-size: 22.0px;
+    -fx-font-weight: bold;
+}
+.channel-subtitle {
+    -fx-text-fill: #606060;
+}
+
+/* --- Main Dashboard (studio.fxml) --- */
+.card-estudio {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #eee;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);
+    -fx-padding: 25;
+}
+.list-view { /* Applying card style to ListView */
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #eee;
+    -fx-border-radius: 12;
+}
+
+.btn-gerenciamento {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #333;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER;
+    -fx-padding: 10 20;
+    -fx-font-weight: bold;
+}
+.btn-gerenciamento:hover {
+    -fx-background-color: #e0e0e0;
+}
+.btn-delete {
+    -fx-text-fill: red;
+}
+
+.btn-criar-post {
+    -fx-background-color: #6a11cb;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 10 25;
+    -fx-font-size: 14px;
+}
+.btn-criar-post:hover {
+    -fx-background-color: #2575fc;
+}
+
+
+/* --- Form (create_post.fxml) --- */
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 30 40;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 5);
+    -fx-max-width: 700px;
+}
+
+.form-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #444;
+}
+
+.form-field {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #ccc;
+    -fx-background-color: white;
+    -fx-padding: 5 15;
+    -fx-pref-height: 40;
+    -fx-font-size: 14px;
+}
+.form-field:focused {
+    -fx-border-color: #6a11cb;
+    -fx-border-width: 1.5px;
+}
+
+.btn-selecionar {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-pref-height: 40;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+}
+.btn-selecionar:hover {
+    -fx-background-color: #ececec;
+    -fx-border-color: #6a11cb;
+}
+
+.btn-publicar {
+    -fx-background-color: linear-gradient(to right, #6a11cb, #2575fc);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 12 30;
+    -fx-font-size: 14px;
+}
+.btn-publicar:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.btn-cancelar {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666;
+    -fx-background-radius: 8;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-padding: 12 30;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.btn-cancelar:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: #999;
+}

@@ -327,6 +327,8 @@ public class DashboardController {
     @FXML
     private void handleCreateChannel() {
         SceneManager.showCreateChannelDialog();
+        // After the dialog closes, reload the channel list to show the new one.
+        loadUserChannelsMenu();
     }
 
     @FXML
