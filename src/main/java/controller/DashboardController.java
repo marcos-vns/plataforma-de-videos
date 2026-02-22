@@ -7,12 +7,15 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import model.Channel;
 import model.Post;
+import model.Video;
 import model.Role;
 import service.AuthenticationService;
 import service.ChannelService;
 import service.UserSession;
 import service.UserChannelService;
 import service.PostService;
+import controller.PostCardController;
+import controller.ChannelCardController;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -24,7 +27,10 @@ public class DashboardController {
     @FXML private MenuButton userMenuButton;
     @FXML private Menu channelsSubMenu;
     @FXML private FlowPane postsGrid;
+    @FXML private VBox channelsSection;
+    @FXML private FlowPane channelsGrid;
     @FXML private Label sectionTitle;
+    @FXML private ChoiceBox<String> searchFilterChoiceBox;
     @FXML private javafx.scene.image.ImageView userProfilePic;
 
     private ChannelService channelService;
@@ -44,6 +50,8 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
+        // Set default search filter
+        searchFilterChoiceBox.setValue("Todos");
         // We wait for services to be injected before loading data
         // However, in our SceneManager, services are injected in the factory
         // so they should be ready here, along with @FXML fields.
@@ -94,7 +102,13 @@ public class DashboardController {
                     System.err.println("DashboardController: Falha ao obter controller do PostCard!");
                     continue;
                 }
-                Channel channel = channelService.getChannelById(post.getChannelId());
+                Channel channel = null;
+                try {
+                    channel = channelService.getChannelById(post.getChannelId());
+                } catch (SQLException e) {
+                    System.err.println("Erro ao obter canal para post " + post.getId() + ": " + e.getMessage());
+                    e.printStackTrace();
+                }
                 controller.setData(post, channel);
                 
                 postsGrid.getChildren().add(card);
@@ -105,38 +119,125 @@ public class DashboardController {
         }
     }
 
+    private void displayChannels(List<Channel> channels) {
+        channelsGrid.getChildren().clear();
+        for (Channel channel : channels) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/channel_card.fxml"));
+                VBox card = loader.load();
+
+                ChannelCardController controller = loader.getController();
+                if (controller == null) {
+                    System.err.println("DashboardController: Falha ao obter controller do ChannelCard!");
+                    continue;
+                }
+                controller.setData(channel);
+                
+                channelsGrid.getChildren().add(card);
+            } catch (Exception e) {
+                System.err.println("DashboardController: Erro ao carregar card para canal " + channel.getName() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void loadUserChannelsMenu() {
         channelsSubMenu.getItems().clear();
-        var channels = channelService.findChannelsByUser(UserSession.getUser().getId());
-        for (Channel channel : channels) {
-            String label = channel.getName();
-            if (channel.getCurrentUserRole() != null) {
-                label += " (" + channel.getCurrentUserRole().name() + ")";
+        try {
+            long userId = UserSession.getUser().getId();
+            System.out.println("DEBUG: Loading channels for user ID: " + userId);
+            var channels = channelService.findChannelsByUser(userId);
+            System.out.println("DEBUG: Found " + channels.size() + " channels for user.");
+            for (Channel channel : channels) {
+                System.out.println("DEBUG: Adding channel to menu: " + channel.getName() + " (ID: " + channel.getId() + ")");
+                String label = channel.getName();
+                if (channel.getCurrentUserRole() != null) {
+                    label += " (" + channel.getCurrentUserRole().name() + ")";
+                }
+                MenuItem item = new MenuItem(label);
+                item.setOnAction(e -> SceneManager.showStudioScene(channel));
+                channelsSubMenu.getItems().add(item);
             }
-            MenuItem item = new MenuItem(label);
-            item.setOnAction(e -> SceneManager.showStudioScene(channel));
-            channelsSubMenu.getItems().add(item);
+        } catch (SQLException e) {
+            System.err.println("Erro ao carregar canais do usuário: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @FXML
     private void handleSearch() {
         String query = searchField.getText().toLowerCase();
+        String filter = searchFilterChoiceBox.getValue();
+        
+        // Clear previous results
+        postsGrid.getChildren().clear();
+        channelsGrid.getChildren().clear();
+        channelsSection.setVisible(false);
+        channelsSection.setManaged(false);
+        postsGrid.setVisible(false); // Hide posts grid by default
+        postsGrid.setManaged(false);
+
         if (query.isEmpty()) {
-            loadAllPosts();
+            loadAllPosts(); // This will load posts and set postsGrid visible
             sectionTitle.setText("Recomendados");
             return;
         }
 
         try {
-            List<Post> allPosts = postService.getAllPosts();
-            List<Post> filtered = allPosts.stream()
-                    .filter(p -> p.getTitle().toLowerCase().contains(query))
-                    .toList();
-            displayPosts(filtered);
-            sectionTitle.setText("Resultados para: " + query);
-        } catch (SQLException e) {
+            boolean foundResults = false;
+            // Search Channels
+            if ("Todos".equals(filter) || "Canais".equals(filter)) {
+                List<Channel> foundChannels = null;
+                try {
+                    foundChannels = channelService.searchChannels(query);
+                } catch (SQLException e) {
+                    System.err.println("Erro ao buscar canais: " + e.getMessage());
+                    e.printStackTrace();
+                    sectionTitle.setText("Erro na pesquisa de canais.");
+                    return;
+                }
+                if (!foundChannels.isEmpty()) {
+                    displayChannels(foundChannels);
+                    channelsSection.setVisible(true);
+                    channelsSection.setManaged(true);
+                    foundResults = true;
+                }
+            }
+
+            // Search Posts
+            if ("Todos".equals(filter) || "Posts".equals(filter)) {
+                List<Post> allPosts = postService.getAllPosts(); // Assuming this gets all posts to filter locally
+                List<Post> filteredPosts = allPosts.stream()
+                        .filter(p -> {
+                            String postDescription = "";
+                            if (p instanceof model.Video videoPost) {
+                                postDescription = videoPost.getDescription() != null ? videoPost.getDescription() : "";
+                            }
+                            return p.getTitle().toLowerCase().contains(query) || postDescription.toLowerCase().contains(query);
+                        })
+                        .toList();
+                if (!filteredPosts.isEmpty()) {
+                    displayPosts(filteredPosts);
+                    postsGrid.setVisible(true);
+                    postsGrid.setManaged(true);
+                    foundResults = true;
+                }
+            }
+
+            if (!foundResults) {
+                sectionTitle.setText("Nenhum resultado encontrado para: " + query);
+                postsGrid.setVisible(false);
+                postsGrid.setManaged(false);
+                channelsSection.setVisible(false);
+                channelsSection.setManaged(false);
+            } else {
+                 sectionTitle.setText("Resultados da Pesquisa para: " + query);
+            }
+           
+        } catch (Exception e) {
+            System.err.println("Erro ao realizar pesquisa: " + e.getMessage());
             e.printStackTrace();
+            sectionTitle.setText("Erro na pesquisa.");
         }
     }
 
@@ -144,7 +245,14 @@ public class DashboardController {
     private void handleAddMember() {
         if (UserSession.getUser() == null) return;
         
-        var channels = channelService.findChannelsByUser(UserSession.getUser().getId());
+        List<Channel> channels = null;
+        try {
+            channels = channelService.findChannelsByUser(UserSession.getUser().getId());
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Erro ao carregar canais: " + e.getMessage()).showAndWait();
+            return;
+        }
+
         if (channels.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("Você não possui canais para gerenciar.");
@@ -187,18 +295,26 @@ public class DashboardController {
 
     @FXML
     private void viewHistory() {
-        // Placeholder for history logic
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Histórico");
-        alert.setHeaderText(null);
-        alert.setContentText("Funcionalidade de histórico será implementada em breve.");
-        alert.showAndWait();
+        if (UserSession.getUser() == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Você precisa estar logado para ver o histórico.");
+            alert.showAndWait();
+            return;
+        }
+        SceneManager.showHistoryScene();
     }
 
     @FXML
     private void enterStudio() {
         // By default, if they click "Studio" in the main menu, maybe show a channel picker or enter the first channel
-        var channels = channelService.findChannelsByUser(UserSession.getUser().getId());
+        List<Channel> channels = null;
+        try {
+            channels = channelService.findChannelsByUser(UserSession.getUser().getId());
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Erro ao carregar canais: " + e.getMessage()).showAndWait();
+            return;
+        }
+
         if (!channels.isEmpty()) {
             SceneManager.showStudioScene(channels.get(0));
         } else {
@@ -210,31 +326,7 @@ public class DashboardController {
     
     @FXML
     private void handleCreateChannel() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Criar Canal");
-        dialog.setHeaderText("Crie seu novo canal");
-        dialog.setContentText("Nome do canal:");
-
-        dialog.showAndWait().ifPresent(name -> {
-            if (name.trim().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("O nome do canal não pode estar vazio.");
-                alert.showAndWait();
-                return;
-            }
-
-            try {
-                channelService.create(name, null); // For now, no profile pic during creation
-                loadUserChannelsMenu(); // Refresh menu
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setContentText("Canal '" + name + "' criado com sucesso!");
-                alert.showAndWait();
-            } catch (Exception e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Erro ao criar canal: " + e.getMessage());
-                alert.showAndWait();
-            }
-        });
+        SceneManager.showCreateChannelDialog();
     }
 
     @FXML

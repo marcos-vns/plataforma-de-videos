@@ -1,7 +1,9 @@
 package app;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import controller.SceneManager;
 import javafx.application.Application;
@@ -21,12 +23,23 @@ import service.CommentService;
 import service.FileService;
 import service.PostService;
 import service.UserChannelService;
+import service.WatchHistoryService;
+import daos.WatchHistoryDAO;
 
 public class Main extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
 
+        // Ensure the database exists before trying to connect to it
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "root")) { // Replace with actual credentials if different
+            Statement stmt = conn.createStatement();
+            stmt.execute("CREATE DATABASE IF NOT EXISTS teste;");
+            System.out.println("Database 'teste' checked/created.");
+        } catch (SQLException e) {
+            System.err.println("Erro ao criar/verificar database: " + e.getMessage());
+        }
+        
 	    DatabaseConnection.init();
 	    
 	    try {
@@ -39,22 +52,26 @@ public class Main extends Application {
 	    ChannelDAO channelDao = new ChannelDAO();
 	    UserChannelDAO userChannelDao = new UserChannelDAO();
 	    PostDAO postDao = new PostDAO();
+        WatchHistoryDAO watchHistoryDao = new WatchHistoryDAO();
 
 	    AuthenticationService authenticationService =
 	            new AuthenticationService(userDao);
 
-	    UserChannelService userChannelService =
-	            new UserChannelService(userChannelDao, userDao);
-	    
+	    // Instantiate ChannelService first as UserChannelService now depends on it
 	    ChannelService channelService =
-	            new ChannelService(channelDao, userChannelService);
+	            new ChannelService(channelDao); // No longer takes userChannelService
+
+	    UserChannelService userChannelService =
+	            new UserChannelService(userChannelDao, userDao, channelService); // Pass channelService here
 
 	    FileService fileService = new FileService();
-	    
+
 	    PostService postService = new PostService();
 
 	    CommentService commentService = new CommentService();
-	    
+
+        WatchHistoryService watchHistoryService = new WatchHistoryService(watchHistoryDao);
+
 	    SceneManager.init(
 	            stage,
 	            authenticationService,
@@ -62,7 +79,8 @@ public class Main extends Application {
 	            userChannelService,
 	            postService,
 	            fileService,
-	            commentService
+	            commentService,
+                watchHistoryService
 	    );
 
 	    SceneManager.switchScene("/app/view/login.fxml");

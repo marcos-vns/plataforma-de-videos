@@ -1,6 +1,6 @@
 package model;
 public enum Role {
-    OWNER, EDITOR, MODERATOR
+    OWNER, EDITOR, MODERATOR, SUBSCRIBER
 }
 
 

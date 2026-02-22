@@ -16,6 +16,7 @@ import service.CommentService;
 import service.PostService;
 import service.ChannelSession;
 import service.UserSession;
+import service.WatchHistoryService;
 import model.Post;
 import model.Comment;
 import model.Video;
@@ -49,16 +50,25 @@ public class PostController {
 
     private PostService postService;
     private CommentService commentService;
+    private WatchHistoryService watchHistoryService;
     private MediaPlayer mediaPlayer;
     private long currentPostId;
 
-    public void setServices(PostService postService, CommentService commentService) {
+    public void setServices(PostService postService, CommentService commentService, WatchHistoryService watchHistoryService) {
         this.postService = postService;
         this.commentService = commentService;
+        this.watchHistoryService = watchHistoryService;
     }
 
     public void setPost(long postId) {
         this.currentPostId = postId;
+        System.out.println("PostController.setPost called with postId: " + postId);
+        if (UserSession.getUser() != null) {
+            System.out.println("UserSession.getUser() is not null. User ID: " + UserSession.getUser().getId());
+            watchHistoryService.addPostToHistory(UserSession.getUser().getId(), postId);
+        } else {
+            System.out.println("UserSession.getUser() is null. Cannot add to watch history.");
+        }
         loadPostData();
         refreshReactionUI();
         loadComments();
@@ -151,8 +161,11 @@ public class PostController {
         videoControls.setVisible(true);
 
         if (video.getVideoUrl() != null) {
+            System.out.println("DEBUG: Video URL: " + video.getVideoUrl());
             try {
                 File videoFile = new File("storage", video.getVideoUrl());
+                System.out.println("DEBUG: Video file path: " + videoFile.getAbsolutePath());
+                System.out.println("DEBUG: Video file exists: " + videoFile.exists());
                 if (videoFile.exists()) {
                     Media media = new Media(videoFile.toURI().toString());
                     mediaPlayer = new MediaPlayer(media);
@@ -215,6 +228,8 @@ public class PostController {
                     postDescription.setText("Erro: Arquivo não encontrado.");
                 }
             } catch (Exception e) {
+                System.err.println("DEBUG: Exceção ao carregar vídeo: " + e.getMessage());
+                e.printStackTrace();
                 postDescription.setText("Erro ao carregar vídeo.");
             }
         }

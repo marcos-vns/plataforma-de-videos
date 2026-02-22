@@ -6,6 +6,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardController">
 
@@ -25,8 +27,17 @@
                 <Region HBox.hgrow="ALWAYS" />
                 
                 <HBox alignment="CENTER" maxWidth="600.0" prefWidth="400.0" spacing="0">
+                    <ChoiceBox fx:id="searchFilterChoiceBox" prefHeight="32.0" prefWidth="100.0" style="-fx-background-radius: 20 0 0 20; -fx-border-color: #ccc; -fx-border-radius: 20 0 0 20;">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Todos" />
+                                <String fx:value="Posts" />
+                                <String fx:value="Canais" />
+                            </FXCollections>
+                        </items>
+                    </ChoiceBox>
                     <TextField fx:id="searchField" promptText="Pesquisar" HBox.hgrow="ALWAYS" 
-                               style="-fx-background-radius: 20 0 0 20; -fx-border-color: #ccc; -fx-border-radius: 20 0 0 20;" />
+                               style="-fx-background-radius: 0; -fx-border-color: #ccc;" />
                     <Button text="🔍" onAction="#handleSearch" 
                             style="-fx-background-radius: 0 20 20 0; -fx-border-color: #ccc; -fx-border-radius: 0 20 20 0;" />
                 </HBox>
@@ -78,6 +89,14 @@
                                 <Font name="System Bold" size="18.0" />
                             </font>
                         </Label>
+                        <VBox alignment="CENTER" spacing="10" visible="false" managed="false" fx:id="channelsSection">
+                            <Label text="Canais">
+                                <font>
+                                    <Font name="System Bold" size="18.0" />
+                                </font>
+                            </Label>
+                            <FlowPane fx:id="channelsGrid" hgap="20" vgap="20" prefWrapLength="1200" alignment="TOP_LEFT" maxWidth="1200" />
+                        </VBox>
                         <VBox alignment="CENTER">
                             <children>
                                 <FlowPane fx:id="postsGrid" hgap="20" vgap="20" prefWrapLength="1200" alignment="TOP_LEFT" maxWidth="1200" />

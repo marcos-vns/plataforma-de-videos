@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS channels (
 CREATE TABLE IF NOT EXISTS user_channel (
     user_id INT,
     channel_id INT,
-    role ENUM('owner', 'editor', 'moderator') NOT NULL,
+    role ENUM('owner', 'editor', 'moderator', 'subscriber') NOT NULL,
     PRIMARY KEY (user_id, channel_id),
     
     CONSTRAINT fk_user_channel_user 
@@ -117,4 +117,17 @@ CREATE TABLE IF NOT EXISTS comments (
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE,
     FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
+);
+
+-- ================================
+-- TABELA: watch_history
+-- ================================
+CREATE TABLE IF NOT EXISTS watch_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    post_id INT NOT NULL,
+    watch_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, post_id), -- Add this line
+    FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );

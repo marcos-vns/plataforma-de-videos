@@ -14,6 +14,7 @@ import service.*;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +58,13 @@ public class StudioController {
     public void setChannel(Channel channel) {
         // Refresh channel from DB to get the latest role and data
         if (channelService != null) {
-            this.currentChannel = channelService.getChannelById(channel.getId());
+            try {
+                this.currentChannel = channelService.getChannelById(channel.getId());
+            } catch (SQLException e) {
+                System.err.println("Erro ao carregar canal no StudioController: " + e.getMessage());
+                e.printStackTrace();
+                this.currentChannel = channel; // Fallback to original channel if DB fetch fails
+            }
         } else {
             this.currentChannel = channel;
         }
@@ -71,10 +78,13 @@ public class StudioController {
 
     private void loadUserRole() {
         if (currentChannel != null && UserSession.getUser() != null) {
-            // Using the new DAO method via service if available, otherwise mock for now
-            // userRole = userChannelService.getRole(UserSession.getUser().getId(), currentChannel.getId());
-            // Since I don't have userChannelService.getRole yet in the interface, I'll use a direct check if possible or wait for injection
-            userRole = currentChannel.getCurrentUserRole();
+            try {
+                userRole = userChannelService.getRole(UserSession.getUser().getId(), currentChannel.getId());
+            } catch (SQLException e) {
+                System.err.println("Erro ao carregar função do usuário: " + e.getMessage());
+                e.printStackTrace();
+                userRole = Role.MODERATOR; // Fallback in case of error
+            }
             if (userRole == null) userRole = Role.MODERATOR; // Fallback
         }
     }

@@ -13,7 +13,7 @@ import model.Channel;
 
 public class ChannelDAO {
 
-	public Channel save(String channelName, String profilePictureUrl) {
+	public Channel save(String channelName, String profilePictureUrl) throws SQLException {
 
 	    String sql = "INSERT INTO channels (name, profile_picture_url) VALUES (?, ?)";
 
@@ -37,14 +37,11 @@ public class ChannelDAO {
 	            }
 	        }
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-
+	    } 
 	    return null;
 	}
     
-    public Channel findById(long id, long userId) {
+    public Channel findById(long id, long userId) throws SQLException {
         String sql = """
             SELECT c.name, c.subscribers, c.profile_picture_url, uc.role
             FROM channels c
@@ -64,13 +61,11 @@ public class ChannelDAO {
                 }
                 return channel;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return null;
     }
     
-    public List<Channel> findByUser(long userId) {
+    public List<Channel> findByUser(long userId) throws SQLException {
 
         List<Channel> channels = new ArrayList<>();
 
@@ -104,12 +99,45 @@ public class ChannelDAO {
                 channels.add(channel);
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
-
         return channels;
     }
+        
+            public List<Channel> findChannelsByName(String query) throws SQLException {
+                List<Channel> channels = new ArrayList<>();
+                String sql = "SELECT id, name, profile_picture_url, subscribers FROM channels WHERE name LIKE ?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setString(1, "%" + query + "%");
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        Channel channel = new Channel(
+                                rs.getLong("id"),
+                                rs.getString("name"),
+                                rs.getString("profile_picture_url")
+                        );
+                        channel.setSubscribers(rs.getLong("subscribers"));
+                        channels.add(channel);
+                    }
+                }
+                return channels;
+            }
 
+            public void incrementSubscribers(long channelId) throws SQLException {
+                String sql = "UPDATE channels SET subscribers = subscribers + 1 WHERE id = ?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setLong(1, channelId);
+                    ps.executeUpdate();
+                }
+            }
 
-}
+            public void decrementSubscribers(long channelId) throws SQLException {
+                String sql = "UPDATE channels SET subscribers = subscribers - 1 WHERE id = ?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setLong(1, channelId);
+                    ps.executeUpdate();
+                }
+            }
+        }

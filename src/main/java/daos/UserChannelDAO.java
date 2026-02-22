@@ -11,7 +11,7 @@ import model.UserChannel;
 
 public class UserChannelDAO {
 	
-	public void save(long userId, long channelId, Role role) {
+	public void save(long userId, long channelId, Role role) throws SQLException {
 
 			String sql = "INSERT INTO user_channel (user_id, channel_id, role) VALUES (?, ?, ?)";
 			
@@ -21,14 +21,10 @@ public class UserChannelDAO {
 				ps.setString(3, role.name().toLowerCase());
 				
 				ps.executeUpdate();
-
-			} catch (SQLException e) {
-				e.printStackTrace();
 			}
-
 	}
 	
-	public boolean exists(long userId, long channelId) {
+	public boolean exists(long userId, long channelId) throws SQLException {
 		
 		String sql = "SELECT user_id, channel_id from user_channel WHERE user_id = ? AND channel_id = ?";
 		
@@ -41,15 +37,13 @@ public class UserChannelDAO {
 			
 			if(rs.next()) { return true; };
 
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 		
 		return false;
 		
 	}
 	
-	public boolean hasPermission(long userId, long channelId, Role role) {
+	public boolean hasPermission(long userId, long channelId, Role role) throws SQLException {
 		
 		System.out.println(role.name());
 		
@@ -70,15 +64,13 @@ public class UserChannelDAO {
 				
 			}
 
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 		
 		return false;
 		
 	}
 
-    public Role getRole(long userId, long channelId) {
+    public Role getRole(long userId, long channelId) throws SQLException {
         String sql = "SELECT role FROM user_channel WHERE user_id = ? AND channel_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -89,11 +81,31 @@ public class UserChannelDAO {
                     return Role.valueOf(rs.getString("role").toUpperCase());
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return null;
     }
-		
+
+    public boolean isUserSubscribed(long userId, long channelId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM user_channel WHERE user_id = ? AND channel_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.setLong(2, channelId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+    public void removeUserChannel(long userId, long channelId) throws SQLException {
+        String sql = "DELETE FROM user_channel WHERE user_id = ? AND channel_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.setLong(2, channelId);
+            ps.executeUpdate();
+        }
+    }
 }
-	

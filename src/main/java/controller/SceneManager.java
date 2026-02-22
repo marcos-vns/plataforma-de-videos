@@ -3,6 +3,7 @@ package controller;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import service.AuthenticationService;
 import service.ChannelService;
@@ -10,8 +11,10 @@ import service.UserChannelService;
 import service.FileService;
 import service.PostService;
 import service.CommentService;
+import service.WatchHistoryService;
 import service.ChannelSession;
 import controller.PostController;
+import controller.HistoryController;
 import model.Channel;
 
 import java.io.IOException;
@@ -28,6 +31,7 @@ public class SceneManager {
     private static PostService postService;
     private static FileService fileService;
     private static CommentService commentService;
+    private static WatchHistoryService watchHistoryService;
 
     public static void init(Stage primaryStage,
                             AuthenticationService authService,
@@ -35,7 +39,8 @@ public class SceneManager {
                             UserChannelService ucService,
                             PostService pService,
                             FileService fService,
-                            CommentService cService) {
+                            CommentService cService,
+                            WatchHistoryService whService) {
 
         stage = primaryStage;
         authenticationService = authService;
@@ -44,6 +49,7 @@ public class SceneManager {
         postService = pService;
         fileService = fService;
         commentService = cService;
+        watchHistoryService = whService;
     }
 
     private static URL getFXMLUrl(String fxmlPath) {
@@ -193,6 +199,44 @@ public class SceneManager {
         }
     }
 
+    public static void showCreateChannelDialog() {
+        try {
+            URL url = getFXMLUrl("/app/view/create_channel.fxml");
+
+            if (url == null) {
+                throw new RuntimeException("FXML não encontrado: /app/view/create_channel.fxml");
+            }
+
+            FXMLLoader loader = new FXMLLoader(url);
+            loader.setControllerFactory(clazz -> {
+                try {
+                    Object controller = clazz.getDeclaredConstructor().newInstance();
+                    injectServices(controller);
+                    return controller;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            Parent root = loader.load();
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Criar Canal");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(stage);
+            Scene scene = new Scene(root);
+            dialogStage.setScene(scene);
+
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void showHistoryScene() {
+        switchScene("/app/view/history.fxml");
+    }
+
     private static void injectServices(Object controller) {
         if (controller instanceof DashboardController dc) {
             dc.setServices(channelService, userChannelService, authenticationService, postService);
@@ -205,7 +249,7 @@ public class SceneManager {
             cpc.setFileService(fileService);
         }
         if (controller instanceof PostController pco) {
-            pco.setServices(postService, commentService);
+            pco.setServices(postService, commentService, watchHistoryService);
         }
         if (controller instanceof CommentController cc) {
             cc.setCommentService(commentService);
@@ -220,7 +264,16 @@ public class SceneManager {
             rc.setFileService(fileService);
         }
         if (controller instanceof ChannelController cc) {
-            cc.setServices(postService, channelService);
+            cc.setServices(postService, channelService, userChannelService);
+        }
+        if (controller instanceof CreateChannelController ccc) {
+            ccc.setChannelService(channelService);
+            ccc.setFileService(fileService);
+            ccc.setUserChannelService(userChannelService);
+        }
+        if (controller instanceof HistoryController hc) {
+            hc.setWatchHistoryService(watchHistoryService);
+            hc.setChannelService(channelService);
         }
     }
 }

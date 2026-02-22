@@ -47,7 +47,7 @@
                                     </Label>
                                     <HBox spacing="10.0">
                                         <children>
-                                            <Button text="Inscrever-se" style="-fx-background-color: black; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 15 8 15; -fx-font-weight: bold; -fx-cursor: hand;" />
+                                            <Button fx:id="subscribeButton" onAction="#onSubscribeButtonClicked" text="Inscrever-se" style="-fx-background-color: transparent; -fx-text-fill: black; -fx-background-radius: 20; -fx-padding: 8 15 8 15; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-color: black; -fx-border-width: 1;" />
                                             <Button fx:id="studioBtn" onAction="#enterStudio" text="Gerenciar Canal" visible="false" managed="false" style="-fx-background-color: #f0f0f0; -fx-background-radius: 20; -fx-padding: 8 15 8 15; -fx-font-weight: bold; -fx-cursor: hand;" />
                                         </children>
                                         <VBox.margin>
