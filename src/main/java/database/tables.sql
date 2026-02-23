@@ -2,9 +2,9 @@ CREATE DATABASE IF NOT EXISTS teste;
 USE teste;
 
 -- ================================
--- TABELA: accounts (UserAccount)
+-- TABELA: accounts (user_accounts)
 -- ================================
-CREATE TABLE IF NOT EXISTS UserAccount (
+CREATE TABLE IF NOT EXISTS user_accounts (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS user_channel (
     
     CONSTRAINT fk_user_channel_user 
         FOREIGN KEY (user_id) 
-        REFERENCES UserAccount(id) 
+        REFERENCES user_accounts(id) 
         ON DELETE CASCADE,
         
     CONSTRAINT fk_user_channel_channel 
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS post_likes (
     post_id INT,
     is_like BOOLEAN, -- TRUE for like, FALSE for dislike
     PRIMARY KEY (user_id, post_id),
-    FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user_accounts(id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS comments (
     parent_id INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user_accounts(id) ON DELETE CASCADE,
     FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
 );
 
@@ -128,6 +128,6 @@ CREATE TABLE IF NOT EXISTS watch_history (
     post_id INT NOT NULL,
     watch_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, post_id), -- Add this line
-    FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user_accounts(id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );

@@ -31,8 +31,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 
-        // Ensure the database exists before trying to connect to it
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "root")) { // Replace with actual credentials if different
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "root")) {
             Statement stmt = conn.createStatement();
             stmt.execute("CREATE DATABASE IF NOT EXISTS teste;");
             System.out.println("Database 'teste' checked/created.");
@@ -51,12 +50,11 @@ public class Main extends Application {
 	    AuthenticationService authenticationService =
 	            new AuthenticationService(userDao);
 
-	    // Instantiate ChannelService first as UserChannelService now depends on it
 	    ChannelService channelService =
-	            new ChannelService(channelDao); // No longer takes userChannelService
+	            new ChannelService(channelDao);
 
 	    UserChannelService userChannelService =
-	            new UserChannelService(userChannelDao, userDao, channelService); // Pass channelService here
+	            new UserChannelService(userChannelDao, userDao, channelService);
 
 	    FileService fileService = new FileService();
 
@@ -79,10 +77,10 @@ public class Main extends Application {
 
 	            SceneManager.switchScene("/app/view/login.fxml");
 	    
-	            stage.setTitle("Streamly"); // Set the window title
-	            stage.setWidth(1280);      // Set the window width
-	            stage.setHeight(720);     // Set the window height
-	            stage.centerOnScreen();   // Center the window
+	            stage.setTitle("Streamly");
+	            stage.setWidth(1280);
+	            stage.setHeight(720);
+	            stage.centerOnScreen();
 	    
 	            stage.show();	}
 

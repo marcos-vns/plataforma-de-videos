@@ -45,7 +45,7 @@ public class PostCardController {
         
         // Set Tag
         if (post instanceof model.Video video) {
-            typeTag.setText(video.getCategory().name()); // LONG or SHORT
+            typeTag.setText(video.getCategory().name());
             typeTag.setStyle(typeTag.getStyle() + (video.getCategory() == model.VideoCategory.SHORT ? "-fx-background-color: #f00;" : ""));
         } else {
             typeTag.setText("TEXTO");
@@ -53,12 +53,10 @@ public class PostCardController {
         }
         
         if (post.getThumbnailUrl() != null && !post.getThumbnailUrl().isEmpty()) {
-            // post.getThumbnailUrl() contains "thumbnails/uuid.png"
             File file = new File("storage", post.getThumbnailUrl());
             if (file.exists()) {
                 thumbnail.setImage(new Image(file.toURI().toString()));
             } else {
-                // Fallback for debugging if path is different
                 System.err.println("Thumbnail not found at: " + file.getAbsolutePath());
             }
         }
@@ -71,7 +69,7 @@ public class PostCardController {
 
     @FXML
     private void onChannelClicked(javafx.scene.input.MouseEvent event) {
-        event.consume(); // Prevent card click
+        event.consume();
         if (channel != null) {
             SceneManager.showChannelScene(channel);
         }

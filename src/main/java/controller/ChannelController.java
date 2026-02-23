@@ -72,11 +72,9 @@ public class ChannelController {
         if (channel == null) return;
         
         try {
-            // Reload channel data from DB to get latest subscriber count and role info
             this.channel = channelService.getChannelById(this.channel.getId());
         } catch (SQLException e) {
             System.err.println("Erro ao recarregar dados do canal: " + e.getMessage());
-            // Optionally, show an alert to the user
         }
 
         channelNameLabel.setText(channel.getName());
@@ -114,8 +112,8 @@ public class ChannelController {
             } else {
                 userChannelService.subscribe(UserSession.getUser().getId(), channel.getId());
             }
-            loadChannelData(); // Refresh subscriber count
-            updateSubscribeButton(); // Update button text and style
+            loadChannelData();
+            updateSubscribeButton();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Erro ao alterar inscrição: " + e.getMessage()).showAndWait();
             e.printStackTrace();
@@ -234,13 +232,11 @@ public class ChannelController {
             model.Role userRoleInChannel = userChannelService.getRole(UserSession.getUser().getId(), channel.getId());
 
             if (userRoleInChannel == model.Role.OWNER || userRoleInChannel == model.Role.EDITOR || userRoleInChannel == model.Role.MODERATOR) {
-                // User is an owner, editor, or moderator - show "Gerenciar Canal" button
                 subscribeButton.setVisible(false);
                 subscribeButton.setManaged(false);
                 studioBtn.setVisible(true);
                 studioBtn.setManaged(true);
             } else {
-                // User is a subscriber or not subscribed - show subscribe button
                 studioBtn.setVisible(false);
                 studioBtn.setManaged(false);
                 subscribeButton.setVisible(true);

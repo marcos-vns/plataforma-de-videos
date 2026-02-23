@@ -50,11 +50,7 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
-        // Set default search filter
         searchFilterChoiceBox.setValue("Todos");
-        // We wait for services to be injected before loading data
-        // However, in our SceneManager, services are injected in the factory
-        // so they should be ready here, along with @FXML fields.
         loadInitialData();
     }
 
@@ -166,23 +162,21 @@ public class DashboardController {
         String query = searchField.getText().toLowerCase();
         String filter = searchFilterChoiceBox.getValue();
         
-        // Clear previous results
         postsGrid.getChildren().clear();
         channelsGrid.getChildren().clear();
         channelsSection.setVisible(false);
         channelsSection.setManaged(false);
-        postsGrid.setVisible(false); // Hide posts grid by default
+        postsGrid.setVisible(false);
         postsGrid.setManaged(false);
 
         if (query.isEmpty()) {
-            loadAllPosts(); // This will load posts and set postsGrid visible
+            loadAllPosts();
             sectionTitle.setText("Recomendados");
             return;
         }
 
         try {
             boolean foundResults = false;
-            // Search Channels
             if ("Todos".equals(filter) || "Canais".equals(filter)) {
                 List<Channel> foundChannels = null;
                 try {
@@ -201,9 +195,8 @@ public class DashboardController {
                 }
             }
 
-            // Search Posts
             if ("Todos".equals(filter) || "Posts".equals(filter)) {
-                List<Post> allPosts = postService.getAllPosts(); // Assuming this gets all posts to filter locally
+                List<Post> allPosts = postService.getAllPosts();
                 List<Post> filteredPosts = allPosts.stream()
                         .filter(p -> {
                             String postDescription = "";
@@ -303,7 +296,6 @@ public class DashboardController {
 
     @FXML
     private void enterStudio() {
-        // By default, if they click "Studio" in the main menu, maybe show a channel picker or enter the first channel
         List<Channel> channels = null;
         try {
             channels = channelService.findChannelsByUser(UserSession.getUser().getId());
@@ -324,7 +316,6 @@ public class DashboardController {
     @FXML
     private void handleCreateChannel() {
         SceneManager.showCreateChannelDialog();
-        // After the dialog closes, reload the channel list to show the new one.
         loadUserChannelsMenu();
     }
 

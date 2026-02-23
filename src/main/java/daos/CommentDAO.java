@@ -33,7 +33,7 @@ public class CommentDAO {
     public List<Comment> findByPostId(long postId) throws SQLException {
         List<Comment> comments = new ArrayList<>();
         String sql = "SELECT c.*, u.username FROM comments c " +
-                     "JOIN UserAccount u ON c.user_id = u.id " +
+                     "JOIN user_accounts u ON c.user_id = u.id " +
                      "WHERE c.post_id = ? ORDER BY c.created_at DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

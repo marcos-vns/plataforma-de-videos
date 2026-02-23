@@ -29,13 +29,11 @@ public class StudioController {
     @FXML private Button createPostBtn;
     @FXML private ListView<Post> postsListView;
     
-    // Panels for role visibility
     @FXML private VBox mainDashboard;
     @FXML private VBox ownerPanel;
     @FXML private VBox commentModerationView;
     @FXML private VBox postEditArea;
     
-    // Moderation/Edit View
     @FXML private Label moderatingPostTitle;
     @FXML private TextField editTitleField;
     @FXML private TextArea editDescriptionField;
@@ -56,14 +54,13 @@ public class StudioController {
     public void setUserChannelService(UserChannelService userChannelService) { this.userChannelService = userChannelService; }
 
     public void setChannel(Channel channel) {
-        // Refresh channel from DB to get the latest role and data
         if (channelService != null) {
             try {
                 this.currentChannel = channelService.getChannelById(channel.getId());
             } catch (SQLException e) {
                 System.err.println("Erro ao carregar canal no StudioController: " + e.getMessage());
                 e.printStackTrace();
-                this.currentChannel = channel; // Fallback to original channel if DB fetch fails
+                this.currentChannel = channel;
             }
         } else {
             this.currentChannel = channel;
@@ -83,9 +80,9 @@ public class StudioController {
             } catch (SQLException e) {
                 System.err.println("Erro ao carregar função do usuário: " + e.getMessage());
                 e.printStackTrace();
-                userRole = Role.MODERATOR; // Fallback in case of error
+                userRole = Role.MODERATOR;
             }
-            if (userRole == null) userRole = Role.MODERATOR; // Fallback
+            if (userRole == null) userRole = Role.MODERATOR;
         }
     }
 
@@ -228,7 +225,7 @@ public class StudioController {
         
         Button deleteBtn = new Button("Excluir");
         deleteBtn.setStyle("-fx-text-fill: red; -fx-background-color: transparent; -fx-cursor: hand;");
-        deleteBtn.setVisible(false); // Initially hidden, show on hover
+        deleteBtn.setVisible(false);
         
         mainBox.setOnMouseEntered(e -> deleteBtn.setVisible(true));
         mainBox.setOnMouseExited(e -> deleteBtn.setVisible(false));
@@ -266,11 +263,6 @@ public class StudioController {
         box.getChildren().addAll(texts, spacer, replyBtn, deleteBtn);
         mainBox.getChildren().addAll(box, replyArea);
         
-        // Wrap in HBox to maintain existing return type if necessary, 
-        // but it's better to return VBox if possible. 
-        // The original code returned HBox. Let's see if I can return VBox.
-        // Returning a generic node would be best but let's stick to HBox if I must, 
-        // though VBox is better here. I will change the return type to HBox by wrapping.
         HBox wrapper = new HBox(mainBox);
         HBox.setHgrow(mainBox, Priority.ALWAYS);
         return wrapper;
@@ -278,8 +270,6 @@ public class StudioController {
 
     @FXML
     private void handleUpdatePost() {
-        // Implementation for updating post (Editor/Owner)
-        // Would need a service method like postService.updatePost(...)
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText("Funcionalidade de edição de post será implementada em breve.");
         alert.show();
@@ -345,7 +335,6 @@ public class StudioController {
         dialog.setHeaderText("Alterar nome do canal");
         dialog.setContentText("Novo nome:");
         dialog.showAndWait().ifPresent(newName -> {
-            // Need channelService.updateChannelName(id, name)
             System.out.println("Updating channel name to: " + newName);
         });
     }
@@ -357,7 +346,6 @@ public class StudioController {
         alert.setHeaderText("CUIDADO: Isso excluirá o canal e todos os seus vídeos!");
         alert.setContentText("Deseja continuar?");
         if (alert.showAndWait().get() == ButtonType.OK) {
-            // Need channelService.deleteChannel(id)
             System.out.println("Deleting channel...");
         }
     }

@@ -76,7 +76,6 @@ public class PostController {
 
     private void loadPostData() {
         try {
-            // Increment views BEFORE loading (if not viewed in session)
             postService.incrementViews(currentPostId);
 
             Post post = postService.getPostById(currentPostId);
@@ -108,12 +107,10 @@ public class PostController {
             
             Boolean reaction = postService.getUserReaction(UserSession.getUser().getId(), currentPostId);
             
-            // Update labels from DB
             Post post = postService.getPostById(currentPostId);
             likesLabel.setText(String.valueOf(post.getLikes()));
             dislikesLabel.setText(String.valueOf(post.getDislikes()));
 
-            // Update button styles
             if (reaction == null) {
                 btnLike.setStyle("-fx-background-color: transparent; -fx-border-color: #ccc; -fx-border-radius: 5;");
                 btnDislike.setStyle("-fx-background-color: transparent; -fx-border-color: #ccc; -fx-border-radius: 5;");

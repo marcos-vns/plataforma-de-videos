@@ -114,7 +114,7 @@ public class CreatePostController {
         newVideo.setTitle(txtTitle.getText());
         newVideo.setDescription(txtDescription.getText());
         newVideo.setChannelId(ChannelSession.getChannel().getId());
-        newVideo.setDurationSeconds(0); // Simplificado: sem leitura de duração por enquanto
+        newVideo.setDurationSeconds(0);
 
         activeTask = new Task<>() {
             @Override

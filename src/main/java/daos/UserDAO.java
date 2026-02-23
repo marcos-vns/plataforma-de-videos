@@ -14,7 +14,7 @@ public class UserDAO {
 	
 	public void save(User user) {
 
-		String sql = "INSERT INTO UserAccount (name, username, email, password, profile_picture_url) VALUES (? , ? , ?, ?, ?)";
+		String sql = "INSERT INTO user_accounts (name, username, email, password, profile_picture_url) VALUES (? , ? , ?, ?, ?)";
 		
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);){
 			
@@ -40,7 +40,7 @@ public class UserDAO {
 	
 	public User findByUsername(String usernameToFind) {
 		
-		String sql = "SELECT * FROM UserAccount WHERE username = ?";
+		String sql = "SELECT * FROM user_accounts WHERE username = ?";
 		
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
 
@@ -69,7 +69,7 @@ public class UserDAO {
 	
 	public User findByEmail(String emailToFind) {
 		
-		String sql = "SELECT * FROM UserAccount WHERE email = ?";
+		String sql = "SELECT * FROM user_accounts WHERE email = ?";
 		
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
 

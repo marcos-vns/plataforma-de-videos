@@ -24,7 +24,6 @@ public class SceneManager {
 
     private static Stage stage;
 
-    // services compartilhados durante toda a sessão
     private static AuthenticationService authenticationService;
     private static ChannelService channelService;
     private static UserChannelService userChannelService;
@@ -53,10 +52,8 @@ public class SceneManager {
     }
 
     private static URL getFXMLUrl(String fxmlPath) {
-        // Tenta com o caminho original (geralmente começando com /)
         URL url = SceneManager.class.getResource(fxmlPath);
         if (url == null && fxmlPath.startsWith("/")) {
-            // Tenta sem a barra inicial se falhar
             url = SceneManager.class.getResource(fxmlPath.substring(1));
         }
         return url;
@@ -120,7 +117,6 @@ public class SceneManager {
             Parent root = loader.load();
             StudioController studioController = loader.getController();
             if (studioController != null) {
-                // Ensure Session is updated
                 ChannelSession.setChannel(channel);
                 studioController.setChannel(channel);
             }
