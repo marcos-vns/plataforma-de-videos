@@ -78,6 +78,11 @@ public class RegisterController {
     }
     
     @FXML
+    private void goToLogin() {
+        SceneManager.switchScene("/app/view/login.fxml");
+    }
+    
+    @FXML
     public void initialize() {
     	userService = new UserService(new UserDAO());
     }

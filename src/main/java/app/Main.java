@@ -41,12 +41,6 @@ public class Main extends Application {
         }
         
 	    DatabaseConnection.init();
-	    
-	    try {
-	        new database.SqlTables().createTables();
-	    } catch (SQLException e) {
-	        System.err.println("Erro ao criar tabelas: " + e.getMessage());
-	    }
 
 	    UserDAO userDao = new UserDAO();
 	    ChannelDAO channelDao = new ChannelDAO();

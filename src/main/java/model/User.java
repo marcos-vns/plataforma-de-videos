@@ -19,6 +19,7 @@ public class User{
 	public User(long id, String email, String username, String name, String password) {
 		this.id = id;
 		this.email = email;
+		this.username = username;
 		this.passwordHash = password;
 		this.name = name;
 	}

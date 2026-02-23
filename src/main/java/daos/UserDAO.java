@@ -16,7 +16,7 @@ public class UserDAO {
 
 		String sql = "INSERT INTO UserAccount (name, username, email, password, profile_picture_url) VALUES (? , ? , ?, ?, ?)";
 		
-		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);){
 			
 			ps.setString(1, user.getName());
 			ps.setString(2, user.getUsername());
@@ -25,8 +25,12 @@ public class UserDAO {
 			ps.setString(5, user.getProfilePictureUrl());
 			
 			ps.executeUpdate();
-			
-			conn.close();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    user.setId(rs.getLong(1));
+                }
+            }
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -78,7 +82,7 @@ public class UserDAO {
                         rs.getLong("id"),
                         rs.getString("email"),
                         rs.getString("username"),
-                        rs.getNString("name"),
+                        rs.getString("name"),
                         rs.getString("password"),
                         rs.getString("profile_picture_url")
                 	);

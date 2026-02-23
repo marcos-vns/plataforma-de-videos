@@ -145,11 +145,8 @@ public class DashboardController {
         channelsSubMenu.getItems().clear();
         try {
             long userId = UserSession.getUser().getId();
-            System.out.println("DEBUG: Loading channels for user ID: " + userId);
             var channels = channelService.findChannelsByUser(userId);
-            System.out.println("DEBUG: Found " + channels.size() + " channels for user.");
             for (Channel channel : channels) {
-                System.out.println("DEBUG: Adding channel to menu: " + channel.getName() + " (ID: " + channel.getId() + ")");
                 String label = channel.getName();
                 if (channel.getCurrentUserRole() != null) {
                     label += " (" + channel.getCurrentUserRole().name() + ")";

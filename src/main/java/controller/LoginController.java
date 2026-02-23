@@ -51,7 +51,6 @@ public class LoginController {
     
     @FXML
     public void initialize() {
-    	authenticationService = new AuthenticationService(new UserDAO());
     }
 
 }
