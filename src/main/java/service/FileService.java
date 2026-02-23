@@ -60,11 +60,30 @@ public class FileService {
         }
 
         // 4. Retornar o caminho relativo (para salvar no banco)
-        return subFolder + File.separator + newName;
+        return subFolder + java.io.File.separator + newName;
     }
 
-    private void convertVideo(File input, File output) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder(
+    /**
+     * Deletes a file from the storage directory given its relative path.
+     * @param relativePath The relative path of the file to delete (e.g., "profiles/uuid.jpg")
+     * @return true if the file was successfully deleted, false otherwise.
+     */
+    public boolean deleteFile(String relativePath) {
+        if (relativePath == null || relativePath.isEmpty()) {
+            return false;
+        }
+        java.nio.file.Path filePath = java.nio.file.Paths.get(DIRETORIO_BASE, relativePath);
+        try {
+            return java.nio.file.Files.deleteIfExists(filePath);
+        } catch (java.io.IOException e) {
+            System.err.println("Error deleting file " + relativePath + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void convertVideo(java.io.File input, java.io.File output) throws java.io.IOException {
+        java.lang.ProcessBuilder pb = new java.lang.ProcessBuilder(
             "ffmpeg", "-i", input.getAbsolutePath(),
             "-c:v", "libx264", "-profile:v", "high", "-pix_fmt", "yuv420p",
             "-c:a", "aac", "-movflags", "+faststart",

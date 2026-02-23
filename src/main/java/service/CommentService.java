@@ -5,12 +5,13 @@ import java.util.List;
 import daos.CommentDAO;
 import model.Comment;
 import model.User;
+import daos.CommentDAO;
 
 public class CommentService {
-    private CommentDAO commentDAO;
+    private daos.CommentDAO commentDAO;
 
-    public CommentService() {
-        this.commentDAO = new CommentDAO();
+    public CommentService(daos.CommentDAO commentDAO) {
+        this.commentDAO = commentDAO;
     }
 
     public void createComment(long postId, String text) throws SQLException {
@@ -52,7 +53,15 @@ public class CommentService {
         return commentDAO.findByPostId(postId);
     }
 
-    public void deleteComment(long commentId) throws SQLException {
+    public void deleteComment(long commentId) throws java.sql.SQLException {
         commentDAO.delete(commentId);
+    }
+
+    public void deleteCommentsByUser(long userId) throws java.sql.SQLException {
+        commentDAO.deleteByUserId(userId); // This method needs to be implemented in CommentDAO
+    }
+
+    public void deleteCommentsByPost(long postId) throws java.sql.SQLException {
+        commentDAO.deleteByPostId(postId); // This method needs to be implemented in CommentDAO
     }
 }

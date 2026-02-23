@@ -6,7 +6,7 @@ public class Video extends Post {
     private Integer durationSeconds;
     private long views;
     private String videoUrl;
-    private VideoCategory category; // Enum: LONGO, SHORT
+    private VideoCategory category;
     
     public Video() {
         this.setPostType(PostType.VIDEO);

@@ -61,4 +61,15 @@ public class WatchHistoryDAO {
         }
         return history;
     }
+
+    public void deleteHistoryByUser(long userId) {
+        String sql = "DELETE FROM watch_history WHERE user_id = ?";
+        try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.executeUpdate();
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

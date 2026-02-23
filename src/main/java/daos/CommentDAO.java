@@ -58,11 +58,29 @@ public class CommentDAO {
         return comments;
     }
 
-    public void delete(long id) throws SQLException {
+    public void delete(long id) throws java.sql.SQLException {
         String sql = "DELETE FROM comments WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, id);
+            ps.executeUpdate();
+        }
+    }
+
+    public void deleteByUserId(long userId) throws java.sql.SQLException {
+        String sql = "DELETE FROM comments WHERE user_id = ?";
+        try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    public void deleteByPostId(long postId) throws java.sql.SQLException {
+        String sql = "DELETE FROM comments WHERE post_id = ?";
+        try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, postId);
             ps.executeUpdate();
         }
     }

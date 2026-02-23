@@ -8,19 +8,24 @@ import model.Post;
 import model.TextPost;
 import model.Video;
 import model.VideoCategory;
+import daos.PostDAO;
+import service.CommentService;
+import service.FileService;
 
 public class PostService {
 
-    private PostDAO postDAO;
+    private daos.PostDAO postDAO;
+    private service.CommentService commentService;
+    private service.FileService fileService;
 
-    public PostService() {
-        this.postDAO = new PostDAO();
+    public PostService(daos.PostDAO postDAO, service.CommentService commentService, service.FileService fileService) {
+        this.postDAO = postDAO;
+        this.commentService = commentService;
+        this.fileService = fileService;
     }
 
-    // Método genérico que aceita qualquer filho de Post
     public void publishPost(Post post) throws IllegalArgumentException, SQLException {
         
-        // 1. Validações Comuns (Generalização)
         if (post.getTitle() == null || post.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("O título do post é obrigatório.");
         }
@@ -28,14 +33,12 @@ public class PostService {
             throw new IllegalArgumentException("O post deve estar vinculado a um canal.");
         }
 
-        // 2. Validações Específicas (Especialização)
         if (post instanceof Video) {
             validateVideo((Video) post);
         } else if (post instanceof TextPost) {
             validateText((TextPost) post);
         }
 
-        // 3. Chama o DAO para persistir
         postDAO.save(post);
     }
 
@@ -47,8 +50,6 @@ public class PostService {
             throw new IllegalArgumentException("A duração do vídeo é inválida.");
         }
         
-        // Regra de negócio: Definir automaticamente se é Short ou Longo
-        // Exemplo: Menos de 60 segundos é Short
         if (video.getDurationSeconds() <= 60) {
             video.setCategory(VideoCategory.SHORT);
         } else {
@@ -75,7 +76,28 @@ public class PostService {
                 }
             
                 public void deletePost(long id) throws SQLException {
+                    model.Post post = postDAO.findById(id);
+                    if (post != null) {
+                        commentService.deleteCommentsByPost(id);
+
+                        if (post instanceof model.Video videoPost) {
+                            if (videoPost.getVideoUrl() != null && !videoPost.getVideoUrl().isEmpty()) {
+                                fileService.deleteFile(videoPost.getVideoUrl());
+                            }
+                            if (videoPost.getThumbnailUrl() != null && !videoPost.getThumbnailUrl().isEmpty()) {
+                                fileService.deleteFile(videoPost.getThumbnailUrl());
+                            }
+                        }
+                    }
                     postDAO.delete(id);
+                }
+
+                public java.util.List<model.Post> findPostsByAuthor(long authorId) throws SQLException {
+                    return postDAO.findAllByAuthorId(authorId);
+                }
+
+                public java.util.List<model.Post> findPostsByChannel(long channelId) throws SQLException {
+                    return postDAO.findAllByChannelId(channelId);
                 }
 
                 public void toggleLike(long userId, long postId, boolean isLike) throws SQLException {

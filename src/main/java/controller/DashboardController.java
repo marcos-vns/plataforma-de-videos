@@ -14,6 +14,7 @@ import service.ChannelService;
 import service.UserSession;
 import service.UserChannelService;
 import service.PostService;
+import service.UserService;
 import controller.PostCardController;
 import controller.ChannelCardController;
 
@@ -37,15 +38,18 @@ public class DashboardController {
     private UserChannelService userChannelService;
     private AuthenticationService authenticationService;
     private PostService postService;
+    private UserService userService; // New field
     
     public void setServices(ChannelService channel,
             UserChannelService userChannel,
             AuthenticationService auth,
-            PostService postService) {
+            PostService postService,
+            UserService userService) { // Updated method signature
 		this.channelService = channel;
 		this.userChannelService = userChannel;
 		this.authenticationService = auth;
         this.postService = postService;
+        this.userService = userService; // New assignment
     }
 
     @FXML
@@ -326,4 +330,36 @@ public class DashboardController {
     		SceneManager.switchScene("/app/view/login.fxml");
     	}
     }
+
+    @FXML
+    private void handleDeleteAccount() {
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationAlert.setTitle("Confirmar Exclusão de Conta");
+        confirmationAlert.setHeaderText("Você está prestes a excluir sua conta permanentemente.");
+        confirmationAlert.setContentText("Esta ação não pode ser desfeita. Tem certeza que deseja continuar?");
+
+        confirmationAlert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    long userId = UserSession.getUser().getId();
+                    userService.deleteUser(userId);
+                    authenticationService.logout();
+                    SceneManager.switchScene("/app/view/login.fxml");
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Sucesso");
+                    successAlert.setHeaderText(null);
+                    successAlert.setContentText("Sua conta foi excluída com sucesso.");
+                    successAlert.showAndWait();
+                } catch (Exception e) {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Erro");
+                    errorAlert.setHeaderText("Erro ao excluir conta.");
+                    errorAlert.setContentText("Ocorreu um erro ao tentar excluir sua conta: " + e.getMessage());
+                    errorAlert.showAndWait();
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
 }

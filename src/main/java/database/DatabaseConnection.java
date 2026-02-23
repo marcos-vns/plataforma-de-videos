@@ -23,11 +23,11 @@ public class DatabaseConnection {
     		config.setUsername("root");
     		config.setPassword("root");
     		
-            config.setMaximumPoolSize(10);        // Máximo 10 conexões
-            config.setMinimumIdle(2);             // Mínimo 2 conexões ociosas
-            config.setConnectionTimeout(30000);   // 30 segundos para timeout
-            config.setIdleTimeout(600000);        // 10 minutos idle
-            config.setMaxLifetime(1800000);       // 30 minutos vida máxima
+            config.setMaximumPoolSize(10);
+            config.setMinimumIdle(2);
+            config.setConnectionTimeout(30000);
+            config.setIdleTimeout(600000);
+            config.setMaxLifetime(1800000);
             
             dataSource = new HikariDataSource(config);
             

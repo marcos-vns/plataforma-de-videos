@@ -6,7 +6,7 @@ public abstract class Post {
     private Long channelId;
     private String title;
     private String thumbnailUrl;
-    private PostType postType; // Enum: VIDEO, TEXT
+    private PostType postType;
     private int likes;
     private int dislikes;
     private java.time.LocalDateTime createdAt;

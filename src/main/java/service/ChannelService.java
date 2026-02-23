@@ -6,15 +6,27 @@ import daos.ChannelDAO;
 import daos.UserChannelDAO;
 import model.Channel;
 import model.Role;
+import service.PostService;
+import service.CommentService;
+import service.FileService;
 
 import java.sql.SQLException;
 
 public class ChannelService {
 	
 	private final ChannelDAO channelDao;
+    private PostService postService;
+    private CommentService commentService;
+    private FileService fileService;
 
-	public ChannelService(ChannelDAO channelDao) {
+	public ChannelService(ChannelDAO channelDao,
+                          PostService postService,
+                          CommentService commentService,
+                          FileService fileService) {
 		this.channelDao = channelDao;
+        this.postService = postService;
+        this.commentService = commentService;
+        this.fileService = fileService;
 	}
 	
 	public Channel create(String name, String profilePictureUrl) throws SQLException {
@@ -40,5 +52,16 @@ public class ChannelService {
 
     public void decrementSubscriberCount(long channelId) throws SQLException {
         channelDao.decrementSubscribers(channelId);
+    }
+
+    public void deleteChannel(long channelId) throws SQLException {
+        // 1. Get all posts for the channel and delete them (cascades to comments and files)
+        java.util.List<model.Post> channelPosts = postService.findPostsByChannel(channelId); // Assuming this method exists
+        for (model.Post post : channelPosts) {
+            postService.deletePost(post.getId());
+        }
+
+        // 2. Delete the channel itself
+        channelDao.delete(channelId); // Assuming ChannelDAO.delete(long channelId) exists
     }
 }

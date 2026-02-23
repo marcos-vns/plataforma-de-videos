@@ -44,23 +44,24 @@ public class Main extends Application {
 	    UserDAO userDao = new UserDAO();
 	    ChannelDAO channelDao = new ChannelDAO();
 	    UserChannelDAO userChannelDao = new UserChannelDAO();
-	    PostDAO postDao = new PostDAO();
-        WatchHistoryDAO watchHistoryDao = new WatchHistoryDAO();
+	    daos.PostDAO postDao = new daos.PostDAO();
+        daos.CommentDAO commentDao = new daos.CommentDAO(); // New DAO instantiation
+        daos.WatchHistoryDAO watchHistoryDao = new daos.WatchHistoryDAO();
 
 	    AuthenticationService authenticationService =
 	            new AuthenticationService(userDao);
 
 	    ChannelService channelService =
-	            new ChannelService(channelDao);
+	            new ChannelService(channelDao, postService, commentService, fileService);
 
 	    UserChannelService userChannelService =
 	            new UserChannelService(userChannelDao, userDao, channelService);
 
 	    FileService fileService = new FileService();
 
-	    PostService postService = new PostService();
+	    service.PostService postService = new service.PostService(postDao, commentService, fileService);
 
-	    CommentService commentService = new CommentService();
+	    service.CommentService commentService = new service.CommentService(commentDao);
 
         WatchHistoryService watchHistoryService = new WatchHistoryService(watchHistoryDao);
 

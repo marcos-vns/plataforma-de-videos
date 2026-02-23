@@ -134,9 +134,18 @@ public class ChannelDAO {
 
             public void decrementSubscribers(long channelId) throws SQLException {
                 String sql = "UPDATE channels SET subscribers = subscribers - 1 WHERE id = ?";
-                try (Connection conn = DatabaseConnection.getConnection();
-                     PreparedStatement ps = conn.prepareStatement(sql)) {
+                try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+                     java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
                     ps.setLong(1, channelId);
+                    ps.executeUpdate();
+                }
+            }
+
+            public void delete(long id) throws java.sql.SQLException {
+                String sql = "DELETE FROM channels WHERE id = ?";
+                try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+                     java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setLong(1, id);
                     ps.executeUpdate();
                 }
             }

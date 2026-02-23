@@ -6,7 +6,7 @@ public class Comment {
     private long id;
     private long postId;
     private long userId;
-    private String username; // Auxiliary for UI
+    private String username;
     private String text;
     private Long parentId;
     private Timestamp createdAt;

@@ -17,7 +17,11 @@ public class WatchHistoryService {
         watchHistoryDAO.addPostToHistory(userId, postId);
     }
 
-    public List<Post> getWatchHistoryByUser(long userId) {
+    public java.util.List<model.Post> getWatchHistoryByUser(long userId) {
         return watchHistoryDAO.getWatchHistoryByUser(userId);
+    }
+
+    public void deleteHistoryByUser(long userId) {
+        watchHistoryDAO.deleteHistoryByUser(userId);
     }
 }

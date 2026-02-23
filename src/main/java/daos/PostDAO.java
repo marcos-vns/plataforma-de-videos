@@ -131,8 +131,8 @@ public class PostDAO {
         return posts;
     }
 
-    public java.util.List<Post> findAllByChannelId(long channelId) throws SQLException {
-        java.util.List<Post> posts = new java.util.ArrayList<>();
+    public java.util.List<model.Post> findAllByChannelId(long channelId) throws java.sql.SQLException {
+        java.util.List<model.Post> posts = new java.util.ArrayList<>();
         String sql = "SELECT p.*, v.description, v.duration_seconds, v.views, v.video_url, v.video_category, pt.content " +
                      "FROM posts p " +
                      "LEFT JOIN videos v ON p.id = v.post_id " +
@@ -140,17 +140,17 @@ public class PostDAO {
                      "WHERE p.channel_id = ? " +
                      "ORDER BY p.created_at DESC";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setLong(1, channelId);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     long id = rs.getLong("id");
                     String type = rs.getString("post_type");
-                    Post post;
+                    model.Post post;
                     if ("VIDEO".equals(type)) {
-                        Video video = new Video();
+                        model.Video video = new model.Video();
                         video.setPostType(model.PostType.VIDEO);
                         video.setDescription(rs.getString("description"));
                         video.setDurationSeconds(rs.getInt("duration_seconds"));
@@ -162,7 +162,7 @@ public class PostDAO {
                         }
                         post = video;
                     } else {
-                        TextPost textPost = new TextPost();
+                        model.TextPost textPost = new model.TextPost();
                         textPost.setPostType(model.PostType.TEXT);
                         textPost.setContent(rs.getString("content"));
                         post = textPost;
@@ -173,7 +173,61 @@ public class PostDAO {
                     post.setThumbnailUrl(rs.getString("thumbnail_url"));
                     post.setLikes(rs.getInt("likes"));
                     post.setDislikes(rs.getInt("dislikes"));
-                    Timestamp ts = rs.getTimestamp("created_at");
+                    java.sql.Timestamp ts = rs.getTimestamp("created_at");
+                    if (ts != null) {
+                        post.setCreatedAt(ts.toLocalDateTime());
+                    }
+                    posts.add(post);
+                }
+            }
+        }
+        
+        return posts;
+    }
+
+    public java.util.List<model.Post> findAllByAuthorId(long authorId) throws java.sql.SQLException {
+        java.util.List<model.Post> posts = new java.util.ArrayList<>();
+        String sql = "SELECT p.*, v.description, v.duration_seconds, v.views, v.video_url, v.video_category, pt.content " +
+                     "FROM posts p " +
+                     "LEFT JOIN videos v ON p.id = v.post_id " +
+                     "LEFT JOIN text_posts pt ON p.id = pt.post_id " +
+                     "WHERE p.author_id = ? " + // Assuming posts table has an author_id column
+                     "ORDER BY p.created_at DESC";
+
+        try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setLong(1, authorId);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long id = rs.getLong("id");
+                    String type = rs.getString("post_type");
+                    model.Post post;
+                    if ("VIDEO".equals(type)) {
+                        model.Video video = new model.Video();
+                        video.setPostType(model.PostType.VIDEO);
+                        video.setDescription(rs.getString("description"));
+                        video.setDurationSeconds(rs.getInt("duration_seconds"));
+                        video.setViews(rs.getLong("views"));
+                        video.setVideoUrl(rs.getString("video_url"));
+                        String category = rs.getString("video_category");
+                        if (category != null) {
+                            video.setCategory(model.VideoCategory.valueOf(category));
+                        }
+                        post = video;
+                    } else {
+                        model.TextPost textPost = new model.TextPost();
+                        textPost.setPostType(model.PostType.TEXT);
+                        textPost.setContent(rs.getString("content"));
+                        post = textPost;
+                    }
+                    post.setId(id);
+                    // post.setChannelId(rs.getLong("channel_id")); // Assuming posts can be author-centric rather than strictly channel-centric
+                    post.setTitle(rs.getString("title"));
+                    post.setThumbnailUrl(rs.getString("thumbnail_url"));
+                    post.setLikes(rs.getInt("likes"));
+                    post.setDislikes(rs.getInt("dislikes"));
+                    java.sql.Timestamp ts = rs.getTimestamp("created_at");
                     if (ts != null) {
                         post.setCreatedAt(ts.toLocalDateTime());
                     }

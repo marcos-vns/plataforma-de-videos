@@ -71,14 +71,14 @@ public class UserDAO {
 		
 		String sql = "SELECT * FROM user_accounts WHERE email = ?";
 		
-		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);){
+		try (java.sql.Connection conn = database.DatabaseConnection.getConnection(); java.sql.PreparedStatement ps = conn.prepareStatement(sql);){
 
 			ps.setString(1, emailToFind);
 			
-			ResultSet rs = ps.executeQuery();
+			java.sql.ResultSet rs = ps.executeQuery();
 			
 			if (rs.next()) {
-                return new User(
+                return new model.User(
                         rs.getLong("id"),
                         rs.getString("email"),
                         rs.getString("username"),
@@ -89,12 +89,42 @@ public class UserDAO {
             }
 		
 
-		} catch (SQLException e) {
+		} catch (java.sql.SQLException e) {
 			e.printStackTrace();
 		}
 		
 		return null;
 		
 	}
+
+    public model.User findById(long id) throws java.sql.SQLException {
+        String sql = "SELECT * FROM user_accounts WHERE id = ?";
+        try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new model.User(
+                            rs.getLong("id"),
+                            rs.getString("email"),
+                            rs.getString("username"),
+                            rs.getString("name"),
+                            rs.getString("password"),
+                            rs.getString("profile_picture_url")
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
+    public void delete(long id) throws java.sql.SQLException {
+        String sql = "DELETE FROM user_accounts WHERE id = ?";
+        try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            ps.executeUpdate();
+        }
+    }
 
 }

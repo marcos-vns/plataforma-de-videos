@@ -78,6 +78,8 @@
                             <MenuItem onAction="#viewHistory" text="Ver Histórico" />
                             <MenuItem onAction="#enterStudio" text="Estúdio de Criação" />
                             <SeparatorMenuItem />
+                            <MenuItem onAction="#handleDeleteAccount" text="Excluir Conta" />
+                            <SeparatorMenuItem />
                             <MenuItem onAction="#logout" text="Logout" />
                         </items>
                     </MenuButton>
