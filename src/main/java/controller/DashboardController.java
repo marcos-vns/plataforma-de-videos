@@ -27,6 +27,8 @@ public class DashboardController {
     @FXML private TextField searchField;
     @FXML private MenuButton userMenuButton;
     @FXML private Menu channelsSubMenu;
+    @FXML private Button loginButton; // Added
+    @FXML private MenuButton createOrAddMemberMenuButton; // Added
     @FXML private FlowPane postsGrid;
     @FXML private VBox channelsSection;
     @FXML private FlowPane channelsGrid;
@@ -73,11 +75,30 @@ public class DashboardController {
             loadUserChannelsMenu();
             userMenuButton.setVisible(true);
             userMenuButton.setManaged(true);
+            userProfilePic.setVisible(true);
+            userProfilePic.setManaged(true);
+            createOrAddMemberMenuButton.setVisible(true);
+            createOrAddMemberMenuButton.setManaged(true);
+
+            loginButton.setVisible(false);
+            loginButton.setManaged(false);
         } else {
             userMenuButton.setVisible(false);
             userMenuButton.setManaged(false);
+            userProfilePic.setVisible(false);
+            userProfilePic.setManaged(false);
+            createOrAddMemberMenuButton.setVisible(false);
+            createOrAddMemberMenuButton.setManaged(false);
+
+            loginButton.setVisible(true);
+            loginButton.setManaged(true);
         }
         loadAllPosts();
+    }
+
+    @FXML
+    private void handleLogin() {
+        SceneManager.switchScene("/app/view/login.fxml");
     }
 
     private void loadAllPosts() {

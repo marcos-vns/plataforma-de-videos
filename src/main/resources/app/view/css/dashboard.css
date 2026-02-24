@@ -174,3 +174,17 @@
 .menu-item:focused .label {
     -fx-text-fill: #6a11cb;
 }
+
+.login-button {
+    -fx-background-color: white;
+    -fx-text-fill: #6a11cb; /* Matches the lighter purple in the gradient */
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 8 15; /* Slightly more padding than icon-button to fit text */
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2); /* Subtle shadow */
+}
+.login-button:hover {
+    -fx-background-color: #f0f0f0; /* Lighter hover effect */
+    -fx-text-fill: #2575fc; /* Matches the bluer part of the gradient */
+}
