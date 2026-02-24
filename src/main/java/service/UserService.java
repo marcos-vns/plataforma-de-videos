@@ -8,6 +8,7 @@ import service.PostService;
 import service.CommentService;
 import service.WatchHistoryService;
 import service.FileService;
+import daos.UserChannelDAO; // Add this import
 
 public class UserService {
 	
@@ -17,19 +18,22 @@ public class UserService {
     private CommentService commentService;
     private WatchHistoryService watchHistoryService;
     private FileService fileService;
+    private UserChannelDAO userChannelDAO;
 	
 	public UserService(UserDAO userDao,
                        ChannelService channelService,
                        PostService postService,
                        CommentService commentService,
                        WatchHistoryService watchHistoryService,
-                       FileService fileService) {
+                       FileService fileService,
+                       UserChannelDAO userChannelDAO) {
 		this.userDao = userDao;
         this.channelService = channelService;
         this.postService = postService;
         this.commentService = commentService;
         this.watchHistoryService = watchHistoryService;
         this.fileService = fileService;
+        this.userChannelDAO = userChannelDAO;
 	}
 
 	public void register(String email, String password, String username, String name, String profilePictureUrl) {
@@ -51,21 +55,32 @@ public class UserService {
 
     public void deleteUser(long userId) throws java.sql.SQLException {
         try {
-            java.util.List<model.Channel> userChannels = channelService.findChannelsByUser(userId);
-            for (model.Channel channel : userChannels) {
-                channelService.deleteChannel(channel.getId());
+            java.util.List<model.Channel> userAssociatedChannels = channelService.findChannelsByUser(userId);
+            for (model.Channel channel : userAssociatedChannels) {
+                model.Role userRole = userChannelDAO.getRole(userId, channel.getId());
+                if (userRole == model.Role.OWNER) {
+                    int ownerCount = userChannelDAO.countOwnersForChannel(channel.getId());
+                    if (ownerCount == 1) {
+                        channelService.deleteChannel(channel.getId());
+                    } else {
+                        userChannelDAO.removeUserChannel(userId, channel.getId());
+                    }
+                } else {
+                    userChannelDAO.removeUserChannel(userId, channel.getId());
+                }
             }
         } catch (Exception e) {
-            System.err.println("Error deleting user's channels: " + e.getMessage());
+            System.err.println("Erro ao processar canais associados ao usuário: " + e.getMessage());
             e.printStackTrace();
-            throw e; // Re-throw to indicate failure
+            throw e;
         }
+
 
 
         try {
             commentService.deleteCommentsByUser(userId);
         } catch (Exception e) {
-            System.err.println("Error deleting user's comments: " + e.getMessage());
+            System.err.println("Erro ao deletar comentarios: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
@@ -73,7 +88,7 @@ public class UserService {
         try {
             watchHistoryService.deleteHistoryByUser(userId);
         } catch (Exception e) {
-            System.err.println("Error deleting user's watch history: " + e.getMessage());
+            System.err.println("Erro ao deletar historico: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
@@ -84,7 +99,7 @@ public class UserService {
                 fileService.deleteFile(userToDelete.getProfilePictureUrl());
             }
         } catch (Exception e) {
-            System.err.println("Error deleting user's profile picture: " + e.getMessage());
+            System.err.println("Error ao deletar foto de perfil: " + e.getMessage());
             e.printStackTrace();
         }
 

@@ -108,4 +108,18 @@ public class UserChannelDAO {
             ps.executeUpdate();
         }
     }
+
+    public int countOwnersForChannel(long channelId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM user_channel WHERE channel_id = ? AND role = 'owner'";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, channelId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
 }

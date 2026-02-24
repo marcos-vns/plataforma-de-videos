@@ -65,7 +65,7 @@ public class Main extends Application {
 	    
         WatchHistoryService watchHistoryService = new WatchHistoryService(watchHistoryDao);
 
-        service.UserService userService = new service.UserService(userDao, channelService, postService, commentService, watchHistoryService, fileService);
+        service.UserService userService = new service.UserService(userDao, channelService, postService, commentService, watchHistoryService, fileService, userChannelDao);
 
 	    SceneManager.init(
 	            stage,
