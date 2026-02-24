@@ -75,8 +75,6 @@ public class UserService {
             throw e;
         }
 
-
-
         try {
             commentService.deleteCommentsByUser(userId);
         } catch (Exception e) {

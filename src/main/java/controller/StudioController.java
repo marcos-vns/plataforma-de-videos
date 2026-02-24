@@ -9,10 +9,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane; // Added
+import javafx.stage.FileChooser; // Added
+import javafx.stage.Stage; // Added
 import model.*;
 import service.*;
 
 import java.io.File;
+import java.io.IOException; // Added
 import java.sql.SQLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,6 +47,7 @@ public class StudioController {
     private CommentService commentService;
     private ChannelService channelService;
     private UserChannelService userChannelService;
+    private FileService fileService; // Added
     private Channel currentChannel;
     private Role userRole;
     private Post selectedPost;
@@ -52,6 +57,7 @@ public class StudioController {
     public void setCommentService(CommentService commentService) { this.commentService = commentService; }
     public void setChannelService(ChannelService channelService) { this.channelService = channelService; }
     public void setUserChannelService(UserChannelService userChannelService) { this.userChannelService = userChannelService; }
+    public void setFileService(FileService fileService) { this.fileService = fileService; } // Added
 
     public void setChannel(Channel channel) {
         if (channelService != null) {
@@ -330,12 +336,127 @@ public class StudioController {
 
     @FXML
     private void handleEditChannel() {
-        TextInputDialog dialog = new TextInputDialog(currentChannel.getName());
+        Dialog<javafx.util.Pair<String, File>> dialog = new Dialog<>();
         dialog.setTitle("Editar Canal");
-        dialog.setHeaderText("Alterar nome do canal");
-        dialog.setContentText("Novo nome:");
-        dialog.showAndWait().ifPresent(newName -> {
-            System.out.println("Updating channel name to: " + newName);
+        dialog.setHeaderText("Alterar nome e imagem de perfil do canal");
+
+        // Set the button types
+        ButtonType updateButtonType = new ButtonType("Atualizar", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new javafx.geometry.Insets(20, 150, 10, 10));
+
+        TextField channelNameField = new TextField(currentChannel.getName());
+        channelNameField.setPromptText("Novo Nome do Canal");
+
+        Label fileLabel = new Label("Imagem de Perfil:");
+        TextField filePathField = new TextField("Nenhum arquivo selecionado.");
+        filePathField.setEditable(false);
+        Button selectFileButton = new Button("Selecionar Imagem");
+
+        ImageView previewImageView = new ImageView();
+        previewImageView.setFitHeight(100);
+        previewImageView.setFitWidth(100);
+        previewImageView.setPreserveRatio(true);
+        if (currentChannel.getProfilePictureUrl() != null && !currentChannel.getProfilePictureUrl().isEmpty()) {
+            File currentPic = new File("storage", currentChannel.getProfilePictureUrl());
+            if (currentPic.exists()) {
+                previewImageView.setImage(new Image(currentPic.toURI().toString()));
+            }
+        }
+
+        final File[] selectedImageFile = {null};
+
+        selectFileButton.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Selecionar Imagem de Perfil");
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+            );
+            Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            File file = fileChooser.showOpenDialog(stage);
+            if (file != null) {
+                selectedImageFile[0] = file;
+                filePathField.setText(file.getName());
+                previewImageView.setImage(new Image(file.toURI().toString()));
+            }
+        });
+        
+        grid.add(new Label("Nome do Canal:"), 0, 0);
+        grid.add(channelNameField, 1, 0);
+        grid.add(fileLabel, 0, 1);
+        grid.add(filePathField, 1, 1);
+        grid.add(selectFileButton, 2, 1);
+        grid.add(previewImageView, 1, 2);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Request focus on the username field by default.
+        Platform.runLater(() -> channelNameField.requestFocus());
+
+        // Convert the result to a username-password-pair when the login button is clicked.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == updateButtonType) {
+                return new javafx.util.Pair<>(channelNameField.getText(), selectedImageFile[0]);
+            }
+            return null;
+        });
+
+        Optional<javafx.util.Pair<String, File>> result = dialog.showAndWait();
+
+        result.ifPresent(pair -> {
+            String newName = pair.getKey();
+            File newImageFile = pair.getValue();
+            boolean updated = false;
+
+            try {
+                // Update channel name if changed
+                if (!newName.equals(currentChannel.getName())) {
+                    channelService.updateChannelName(currentChannel.getId(), newName);
+                    currentChannel.setName(newName);
+                    updated = true;
+                }
+
+                // Update profile picture if a new file was selected
+                if (newImageFile != null) {
+                    // This assumes FileService has a method to save profile pictures and returns the URL
+                    String newProfilePictureUrl = fileService.saveFile(newImageFile, "PROFILE");
+                    channelService.updateChannelProfilePicture(currentChannel.getId(), newProfilePictureUrl);
+                    currentChannel.setProfilePictureUrl(newProfilePictureUrl);
+                    updated = true;
+                }
+
+                if (updated) {
+                    refreshChannelUI();
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setContentText("Detalhes do canal atualizados com sucesso!");
+                    successAlert.showAndWait();
+                } else {
+                    Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
+                    infoAlert.setContentText("Nenhuma alteração detectada.");
+                    infoAlert.showAndWait();
+                }
+
+            } catch (SQLException e) {
+                System.err.println("Erro ao atualizar detalhes do canal (SQL): " + e.getMessage());
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Erro ao atualizar detalhes do canal: " + e.getMessage());
+                alert.showAndWait();
+            } catch (IOException e) {
+                System.err.println("Erro ao salvar imagem de perfil: " + e.getMessage());
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Erro ao salvar imagem de perfil: " + e.getMessage());
+                alert.showAndWait();
+            } catch (IllegalArgumentException e) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setContentText("Aviso: " + e.getMessage());
+                alert.showAndWait();
+            }
         });
     }
 

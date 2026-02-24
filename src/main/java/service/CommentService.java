@@ -58,10 +58,10 @@ public class CommentService {
     }
 
     public void deleteCommentsByUser(long userId) throws java.sql.SQLException {
-        commentDAO.deleteByUserId(userId); // This method needs to be implemented in CommentDAO
+        commentDAO.deleteByUserId(userId);
     }
 
     public void deleteCommentsByPost(long postId) throws java.sql.SQLException {
-        commentDAO.deleteByPostId(postId); // This method needs to be implemented in CommentDAO
+        commentDAO.deleteByPostId(postId);
     }
 }

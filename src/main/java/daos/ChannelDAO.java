@@ -149,4 +149,24 @@ public class ChannelDAO {
                     ps.executeUpdate();
                 }
             }
+
+            public void updateName(long channelId, String newName) throws SQLException {
+                String sql = "UPDATE channels SET name = ? WHERE id = ?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setString(1, newName);
+                    ps.setLong(2, channelId);
+                    ps.executeUpdate();
+                }
+            }
+
+            public void updateProfilePicture(long channelId, String newProfilePictureUrl) throws SQLException {
+                String sql = "UPDATE channels SET profile_picture_url = ? WHERE id = ?";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setString(1, newProfilePictureUrl);
+                    ps.setLong(2, channelId);
+                    ps.executeUpdate();
+                }
+            }
         }

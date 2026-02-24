@@ -258,6 +258,7 @@ public class SceneManager {
             sc.setCommentService(commentService);
             sc.setChannelService(channelService);
             sc.setUserChannelService(userChannelService);
+            sc.setFileService(fileService); // Added
         }
         if (controller instanceof RegisterController rc) {
             rc.setFileService(fileService);
