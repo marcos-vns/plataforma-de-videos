@@ -1,17 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  STYLE MIGRATION LOG
-  Source reference: telasProjeto/src/application/view/cadastro.fxml
-  Changes applied: 
-    - Linked a new stylesheet (register.css) for consistent styling.
-    - Applied styles for text inputs and buttons using style classes.
-    - Removed hardcoded fonts and sizes in favor of CSS.
-    - Added a main title label ("Criar Conta").
-    - Re-aligned all form elements into a clean, centered column by adjusting their absolute layout positions.
-    - Semantically improved the password input from TextField to PasswordField.
-  Conflicts resolved: None. The layout hierarchy was strictly preserved.
-  Pending (manual action required): None.
--->
 
 <?import java.net.URL?>
 <?import javafx.scene.control.Button?>

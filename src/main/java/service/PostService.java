@@ -92,9 +92,7 @@ public class PostService {
                     postDAO.delete(id);
                 }
 
-                public java.util.List<model.Post> findPostsByAuthor(long authorId) throws SQLException {
-                    return postDAO.findAllByAuthorId(authorId);
-                }
+
 
                 public java.util.List<model.Post> findPostsByChannel(long channelId) throws SQLException {
                     return postDAO.findAllByChannelId(channelId);

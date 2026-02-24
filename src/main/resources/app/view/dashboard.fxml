@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  STYLE MIGRATION LOG
-  Source reference: telasProjeto/src/application/view/main.fxml
-  Changes applied: 
-    - Linked dashboard.css stylesheet.
-    - Applied style classes to the root pane, top bar, app title, search components, and user menu buttons.
-    - Removed inline styles in favor of CSS classes.
-  Conflicts resolved: None. Structure preserved.
-  Pending (manual action required): The cards displayed in the FlowPane are styled in their own FXML files (e.g., post_card.fxml).
--->
 
 <?import java.net.URL?>
 <?import javafx.collections.FXCollections?>

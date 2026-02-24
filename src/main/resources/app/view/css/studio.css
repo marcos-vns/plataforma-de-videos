@@ -1,10 +1,8 @@
-/* --- Base and Layout --- */
 .root {
     -fx-background-color: #f9f9f9;
     -fx-font-family: "Consolas";
 }
 
-/* --- Header --- */
 .header-container {
     -fx-background-color: white;	
     -fx-border-color: #ddd;
@@ -25,7 +23,6 @@
     -fx-text-fill: #606060;
 }
 
-/* --- Main Dashboard (studio.fxml) --- */
 .card-estudio {
     -fx-background-color: white;
     -fx-background-radius: 12;
@@ -34,7 +31,7 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);
     -fx-padding: 25;
 }
-.list-view { /* Applying card style to ListView */
+.list-view {
     -fx-background-color: white;
     -fx-background-radius: 12;
     -fx-border-color: #eee;
@@ -71,7 +68,6 @@
 }
 
 
-/* --- Form (create_post.fxml) --- */
 .form-container {
     -fx-background-color: white;
     -fx-background-radius: 15;

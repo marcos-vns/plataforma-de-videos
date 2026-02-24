@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  STYLE MIGRATION LOG
-  Source reference: telasProjeto/src/application/view/estudioPostagem.fxml
-  Changes applied: 
-    - Linked studio.css stylesheet.
-    - Applied style classes to the header, title, channel info, search/action buttons, and management panel.
-    - Used .card-estudio and .list-view to style container elements.
-    - Used .btn-criar-post and .btn-gerenciamento for buttons.
-    - Removed inline styles in favor of CSS.
-  Conflicts resolved: None. The complex StackPane structure for moderation was preserved.
-  Pending (manual action required): None.
--->
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>

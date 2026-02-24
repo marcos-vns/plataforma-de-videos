@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  STYLE MIGRATION LOG
-  Source reference: telasProjeto/src/application/view/estudioPostagem.fxml (confirmacaoPostView)
-  Changes applied: 
-    - Linked studio.css stylesheet.
-    - Replaced the root AnchorPane with a BorderPane and ScrollPane to create a more robust and scrollable layout, preventing content overflow.
-    - Centered the main form VBox and applied the .form-container style class for consistent padding, background, and shadow.
-    - Applied .form-title, .form-label, .form-field, .btn-selecionar, .btn-publicar, and .btn-cancelar classes to all form elements.
-    - Removed inline styles in favor of CSS.
-  Conflicts resolved: The original layout was a simple AnchorPane + VBox. It was restructured into a proper scrollable view to correctly implement the reference design and ensure usability. This was a necessary structural adaptation.
-  Pending (manual action required): None.
--->
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>

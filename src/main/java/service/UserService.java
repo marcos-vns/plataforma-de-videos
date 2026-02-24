@@ -61,16 +61,7 @@ public class UserService {
             throw e; // Re-throw to indicate failure
         }
 
-        try {
-            java.util.List<model.Post> userPosts = postService.findPostsByAuthor(userId);
-            for (model.Post post : userPosts) {
-                postService.deletePost(post.getId());
-            }
-        } catch (Exception e) {
-            System.err.println("Error deleting user's posts: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
+
         try {
             commentService.deleteCommentsByUser(userId);
         } catch (Exception e) {

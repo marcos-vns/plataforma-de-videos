@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  STYLE MIGRATION LOG
-  Source reference: N/A (Styled consistently with the rest of the application)
-  Changes applied: 
-    - Linked history.css stylesheet.
-    - Applied .top-bar, .page-title, and .back-button styles to the header.
-    - Removed inline styles.
-  Conflicts resolved: None.
-  Pending (manual action required): The FlowPane is populated with post cards (post_card.fxml) programmatically. Since post_card.fxml is already styled to use the .card style class, no further action is needed by the developer.
--->
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>

@@ -31,6 +31,7 @@ public class SceneManager {
     private static FileService fileService;
     private static CommentService commentService;
     private static WatchHistoryService watchHistoryService;
+    private static service.UserService userService; // New static field
 
     public static void init(Stage primaryStage,
                             AuthenticationService authService,
@@ -39,7 +40,8 @@ public class SceneManager {
                             PostService pService,
                             FileService fService,
                             CommentService cService,
-                            WatchHistoryService whService) {
+                            WatchHistoryService whService,
+                            service.UserService usService) { // New parameter
 
         stage = primaryStage;
         authenticationService = authService;
@@ -49,6 +51,7 @@ public class SceneManager {
         fileService = fService;
         commentService = cService;
         watchHistoryService = whService;
+        userService = usService; // Assign the new service
     }
 
     private static URL getFXMLUrl(String fxmlPath) {
@@ -235,7 +238,7 @@ public class SceneManager {
 
     private static void injectServices(Object controller) {
         if (controller instanceof DashboardController dc) {
-            dc.setServices(channelService, userChannelService, authenticationService, postService);
+            dc.setServices(channelService, userChannelService, authenticationService, postService, userService);
         }
         if (controller instanceof LoginController lc) {
             lc.setAuthenticationService(authenticationService);
@@ -258,6 +261,7 @@ public class SceneManager {
         }
         if (controller instanceof RegisterController rc) {
             rc.setFileService(fileService);
+            rc.setUserService(userService);
         }
         if (controller instanceof ChannelController cc) {
             cc.setServices(postService, channelService, userChannelService);

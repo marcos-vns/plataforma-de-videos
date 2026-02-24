@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  STYLE MIGRATION LOG
-  Source reference: telasProjeto/src/application/view/main.fxml (telaCriarCanal)
-  Changes applied: 
-    - Linked create_channel.css stylesheet.
-    - Replaced the root VBox with a BorderPane to center the form content.
-    - Applied .form-container class to the main VBox to give it a card/pop-up appearance.
-    - Applied .form-title, .form-label, .form-field, .btn-selecionar, .confirm-button, and .cancel-button styles.
-    - Removed all inline styles.
-  Conflicts resolved: The original layout was a simple VBox. It was wrapped in a BorderPane to allow for proper centering and scaling, which is a necessary adaptation to match the reference design.
-  Pending (manual action required): None.
--->
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>

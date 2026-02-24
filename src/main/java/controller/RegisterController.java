@@ -37,6 +37,10 @@ public class RegisterController {
     public void setFileService(FileService fileService) {
         this.fileService = fileService;
     }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
     
     @FXML
     private void selectProfilePicture() {
@@ -84,6 +88,5 @@ public class RegisterController {
     
     @FXML
     public void initialize() {
-    	userService = new UserService(new UserDAO());
     }
 }

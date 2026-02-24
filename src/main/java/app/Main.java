@@ -51,19 +51,21 @@ public class Main extends Application {
 	    AuthenticationService authenticationService =
 	            new AuthenticationService(userDao);
 
+	    FileService fileService = new FileService();
+
+	    service.CommentService commentService = new service.CommentService(commentDao);
+
+	    service.PostService postService = new service.PostService(postDao, commentService, fileService);
+
 	    ChannelService channelService =
 	            new ChannelService(channelDao, postService, commentService, fileService);
 
 	    UserChannelService userChannelService =
 	            new UserChannelService(userChannelDao, userDao, channelService);
-
-	    FileService fileService = new FileService();
-
-	    service.PostService postService = new service.PostService(postDao, commentService, fileService);
-
-	    service.CommentService commentService = new service.CommentService(commentDao);
-
+	    
         WatchHistoryService watchHistoryService = new WatchHistoryService(watchHistoryDao);
+
+        service.UserService userService = new service.UserService(userDao, channelService, postService, commentService, watchHistoryService, fileService);
 
 	    SceneManager.init(
 	            stage,
@@ -73,7 +75,8 @@ public class Main extends Application {
 	            postService,
 	            fileService,
 	            commentService,
-                watchHistoryService
+                watchHistoryService,
+                userService // Add userService here
 	    );
 
 	            SceneManager.switchScene("/app/view/login.fxml");

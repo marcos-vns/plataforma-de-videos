@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  STYLE MIGRATION LOG
-  Source reference: telasProjeto/src/application/view/main.fxml (VBox with styleClass="videoCard")
-  Changes applied: 
-    - Applied the .card style class to the root VBox for consistent background, radius, shadow, and hover effects.
-    - Applied .card-title and .card-subtitle to the title and channel labels.
-    - Removed all inline styles in favor of CSS classes from the parent stylesheet (dashboard.css).
-    - Preserved the onMouseClicked event handler.
-  Conflicts resolved: None.
-  Pending (manual action required): None.
--->
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>

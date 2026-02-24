@@ -1,21 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  STYLE MIGRATION LOG
-  Source reference: telasProjeto/src/application/view/visualizarVideo.fxml
-  Changes applied: 
-    - Linked post.css stylesheet.
-    - Applied style classes to the main layout, back button, title, media container, description box, stats, and comment input area.
-    - Replaced inline styles and large fonts with CSS classes for a consistent look.
-  Conflicts resolved: The target's dual-purpose (video/text) StackPane was preserved. Styles were applied to the container rather than trying to replicate the reference's simpler layout.
-  Pending (manual action required): 
-    - The individual comments are loaded programmatically into the commentsContainer VBox.
-    - To apply styling, the developer must add style classes to the comment nodes from the Java controller code.
-    - For each comment added to the VBox, the following should be done:
-        - The root container for the comment (e.g., a VBox or HBox) should have: .getStyleClass().add("comment-card");
-        - The Label for the username should have: .getStyleClass().add("comment-username");
-        - The Label for the date should have: .getStyleClass().add("comment-date");
-        - The Label for the comment text should have: .getStyleClass().add("comment-text");
--->
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>

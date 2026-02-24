@@ -169,20 +169,16 @@ public class PostController {
                     mediaView.setMediaPlayer(mediaPlayer);
 
                     mediaPlayer.setOnReady(() -> {
-                        // Obter dimensões originais do vídeo
                         double videoWidth = media.getWidth();
                         double videoHeight = media.getHeight();
                         
-                        // Limitar largura máxima a 900px, mantendo proporção
                         double maxWidth = 900;
                         double displayWidth = Math.min(videoWidth, maxWidth);
                         double displayHeight = (displayWidth / videoWidth) * videoHeight;
 
-                        // Ajustar MediaView
                         mediaView.setFitWidth(displayWidth);
                         mediaView.setFitHeight(displayHeight);
 
-                        // Ajustar Container para não sobrar fundo preto
                         contentPane.setPrefSize(displayWidth, displayHeight);
                         contentPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 
@@ -203,7 +199,6 @@ public class PostController {
                         }
                     });
 
-                    // Permite clicar na barra para buscar
                     progressBar.setOnMousePressed(e -> {
                         mediaPlayer.seek(javafx.util.Duration.seconds(progressBar.getValue()));
                     });
@@ -297,7 +292,6 @@ public class PostController {
             commentsContainer.getChildren().clear();
             java.util.List<Comment> allComments = commentService.getCommentsByPost(currentPostId);
             
-            // Organize comments by parent
             java.util.Map<Long, java.util.List<Comment>> childrenMap = new java.util.HashMap<>();
             java.util.List<Comment> rootComments = new java.util.ArrayList<>();
             
@@ -380,7 +374,7 @@ public class PostController {
         try {
             commentService.createComment(currentPostId, text);
             commentInput.clear();
-            loadComments(); // Atualiza a lista
+            loadComments();
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Erro ao postar comentário: " + e.getMessage());

@@ -18,17 +18,15 @@ public class PostDAO {
         
         try {
             System.out.println("PostDAO: Iniciando salvamento do post...");
-            // 1. Obter conexão e INICIAR TRANSAÇÃO
             conn = DatabaseConnection.getConnection();
-            conn.setAutoCommit(false); // Desliga o commit automático
+            conn.setAutoCommit(false);
 
-            // 2. Inserir na tabela pai (POSTS)
             System.out.println("PostDAO: Inserindo na tabela 'posts'...");
             psPost = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             psPost.setLong(1, post.getChannelId());
             psPost.setString(2, post.getTitle());
             psPost.setString(3, post.getThumbnailUrl());
-            psPost.setString(4, post.getPostType().name()); // Salva "VIDEO" ou "TEXT"
+            psPost.setString(4, post.getPostType().name());
             
             int affectedRows = psPost.executeUpdate();
 
@@ -36,7 +34,6 @@ public class PostDAO {
                 throw new SQLException("Falha ao criar post, nenhuma linha afetada.");
             }
 
-            // 3. Recuperar o ID gerado (Obrigatório para a FK)
             try (ResultSet generatedKeys = psPost.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     post.setId(generatedKeys.getLong(1));
@@ -47,7 +44,6 @@ public class PostDAO {
                 }
             }
 
-            // 4. Inserir na tabela filha específica (Polimorfismo)
             if (post instanceof Video) {
                 System.out.println("PostDAO: Inserindo na tabela 'videos'...");
                 saveVideo((Video) post, conn);
@@ -56,13 +52,11 @@ public class PostDAO {
                 saveText((TextPost) post, conn);
             }
 
-            // 5. EFETIVAR TRANSAÇÃO (Se chegou aqui, tudo deu certo)
             conn.commit();
             System.out.println("PostDAO: Transação efetivada com sucesso.");
 
         } catch (SQLException e) {
             System.err.println("PostDAO: Erro detectado. Realizando rollback...");
-            // 6. ROLLBACK (Se der erro, desfaz tudo)
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -70,14 +64,14 @@ public class PostDAO {
                     ex.printStackTrace();
                 }
             }
-            throw e; // Relança o erro para o Service saber que falhou
+            throw e;
         } finally {
-            // 7. Fechar recursos (Boas práticas)
+
             if (psPost != null) psPost.close();
             if (psChild != null) psChild.close();
             if (conn != null) {
-                conn.setAutoCommit(true); // Restaura o estado padrão
-                conn.close(); // Devolve para o pool do Hikari
+                conn.setAutoCommit(true);
+                conn.close();
             }
         }
     }
@@ -185,59 +179,7 @@ public class PostDAO {
         return posts;
     }
 
-    public java.util.List<model.Post> findAllByAuthorId(long authorId) throws java.sql.SQLException {
-        java.util.List<model.Post> posts = new java.util.ArrayList<>();
-        String sql = "SELECT p.*, v.description, v.duration_seconds, v.views, v.video_url, v.video_category, pt.content " +
-                     "FROM posts p " +
-                     "LEFT JOIN videos v ON p.id = v.post_id " +
-                     "LEFT JOIN text_posts pt ON p.id = pt.post_id " +
-                     "WHERE p.author_id = ? " + // Assuming posts table has an author_id column
-                     "ORDER BY p.created_at DESC";
 
-        try (java.sql.Connection conn = database.DatabaseConnection.getConnection();
-             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
-            
-            ps.setLong(1, authorId);
-            try (java.sql.ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    long id = rs.getLong("id");
-                    String type = rs.getString("post_type");
-                    model.Post post;
-                    if ("VIDEO".equals(type)) {
-                        model.Video video = new model.Video();
-                        video.setPostType(model.PostType.VIDEO);
-                        video.setDescription(rs.getString("description"));
-                        video.setDurationSeconds(rs.getInt("duration_seconds"));
-                        video.setViews(rs.getLong("views"));
-                        video.setVideoUrl(rs.getString("video_url"));
-                        String category = rs.getString("video_category");
-                        if (category != null) {
-                            video.setCategory(model.VideoCategory.valueOf(category));
-                        }
-                        post = video;
-                    } else {
-                        model.TextPost textPost = new model.TextPost();
-                        textPost.setPostType(model.PostType.TEXT);
-                        textPost.setContent(rs.getString("content"));
-                        post = textPost;
-                    }
-                    post.setId(id);
-                    // post.setChannelId(rs.getLong("channel_id")); // Assuming posts can be author-centric rather than strictly channel-centric
-                    post.setTitle(rs.getString("title"));
-                    post.setThumbnailUrl(rs.getString("thumbnail_url"));
-                    post.setLikes(rs.getInt("likes"));
-                    post.setDislikes(rs.getInt("dislikes"));
-                    java.sql.Timestamp ts = rs.getTimestamp("created_at");
-                    if (ts != null) {
-                        post.setCreatedAt(ts.toLocalDateTime());
-                    }
-                    posts.add(post);
-                }
-            }
-        }
-        
-        return posts;
-    }
 
     public Post findById(long id) throws SQLException {
         String sql = "SELECT p.*, v.description, v.duration_seconds, v.views, v.video_url, v.video_category, pt.content " +
@@ -328,7 +270,6 @@ public class PostDAO {
                 }
 
                 if (currentReaction == null) {
-                    // Novo like/dislike
                     try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
                         ps.setLong(1, userId);
                         ps.setLong(2, postId);
@@ -336,14 +277,12 @@ public class PostDAO {
                         ps.executeUpdate();
                     }
                 } else if (currentReaction == isLike) {
-                    // Remover like/dislike existente (toggle off)
                     try (PreparedStatement ps = conn.prepareStatement(deleteSql)) {
                         ps.setLong(1, userId);
                         ps.setLong(2, postId);
                         ps.executeUpdate();
                     }
                 } else {
-                    // Mudar de like para dislike ou vice-versa
                     try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
                         ps.setBoolean(1, isLike);
                         ps.setLong(2, userId);
@@ -352,7 +291,6 @@ public class PostDAO {
                     }
                 }
 
-                // Atualizar contadores na tabela posts
                 syncCounters(postId, conn);
                 
                 conn.commit();
@@ -391,12 +329,12 @@ public class PostDAO {
         return null;
     }
 
-    // Métodos auxiliares privados recebendo a conexão ABERTA
+
     private void saveVideo(Video video, Connection conn) throws SQLException {
         String sql = "INSERT INTO videos (post_id, description, duration_seconds, video_url, video_category) VALUES (?, ?, ?, ?, ?)";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, video.getId()); // FK é o ID do pai
+            ps.setLong(1, video.getId());
             ps.setString(2, video.getDescription());
             ps.setInt(3, video.getDurationSeconds());
             ps.setString(4, video.getVideoUrl());
@@ -411,7 +349,7 @@ public class PostDAO {
         String sql = "INSERT INTO text_posts (post_id, content) VALUES (?, ?)";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, text.getId()); // FK é o ID do pai
+            ps.setLong(1, text.getId());
             ps.setString(2, text.getContent());
             
             ps.executeUpdate();

@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  STYLE MIGRATION LOG
-  Source reference: N/A (Styled consistently with post_card.fxml)
-  Changes applied: 
-    - Replaced inline <style> block and other inline styles with the .card, .card-title, and .card-subtitle style classes from the parent stylesheet (dashboard.css).
-    - This ensures channel cards have the same background, radius, shadow, and hover effects as post cards.
-    - Preserved the onMouseClicked event handler.
-  Conflicts resolved: None.
-  Pending (manual action required): None.
--->
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
