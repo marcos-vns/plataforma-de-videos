@@ -45,7 +45,7 @@ public class Main extends Application {
 	    ChannelDAO channelDao = new ChannelDAO();
 	    UserChannelDAO userChannelDao = new UserChannelDAO();
 	    daos.PostDAO postDao = new daos.PostDAO();
-        daos.CommentDAO commentDao = new daos.CommentDAO(); // New DAO instantiation
+        daos.CommentDAO commentDao = new daos.CommentDAO();
         daos.WatchHistoryDAO watchHistoryDao = new daos.WatchHistoryDAO();
 
 	    AuthenticationService authenticationService =
@@ -76,10 +76,10 @@ public class Main extends Application {
 	            fileService,
 	            commentService,
                 watchHistoryService,
-                userService // Add userService here
+                userService
 	    );
 
-	            SceneManager.switchScene("/app/view/login.fxml");
+	            SceneManager.switchScene("/app/view/dashboard.fxml");
 	    
 	            stage.setTitle("Streamly");
 	            stage.setWidth(1280);

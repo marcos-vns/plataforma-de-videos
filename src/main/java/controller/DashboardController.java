@@ -71,6 +71,11 @@ public class DashboardController {
             }
             
             loadUserChannelsMenu();
+            userMenuButton.setVisible(true);
+            userMenuButton.setManaged(true);
+        } else {
+            userMenuButton.setVisible(false);
+            userMenuButton.setManaged(false);
         }
         loadAllPosts();
     }
@@ -145,8 +150,17 @@ public class DashboardController {
         channelsSubMenu.getItems().clear();
         try {
             long userId = UserSession.getUser().getId();
-            var channels = channelService.findChannelsByUser(userId);
-            for (Channel channel : channels) {
+            var allAssociatedChannels = channelService.findChannelsByUser(userId);
+            
+            // Filter channels to only include those where the user is an owner, editor, or moderator
+            var managedChannels = allAssociatedChannels.stream()
+                .filter(channel -> {
+                    Role userRole = channel.getCurrentUserRole();
+                    return userRole == Role.OWNER || userRole == Role.EDITOR || userRole == Role.MODERATOR;
+                })
+                .toList();
+
+            for (Channel channel : managedChannels) {
                 String label = channel.getName();
                 if (channel.getCurrentUserRole() != null) {
                     label += " (" + channel.getCurrentUserRole().name() + ")";

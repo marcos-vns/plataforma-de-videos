@@ -122,4 +122,15 @@ public class UserChannelDAO {
         }
         return 0;
     }
+
+    public void updateRole(long userId, long channelId, Role newRole) throws SQLException {
+        String sql = "UPDATE user_channel SET role = ? WHERE user_id = ? AND channel_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newRole.name().toLowerCase());
+            ps.setLong(2, userId);
+            ps.setLong(3, channelId);
+            ps.executeUpdate();
+        }
+    }
 }

@@ -47,11 +47,25 @@ public class UserChannelService {
 			throw new RuntimeException("Usuario informado nao existe");
 		}
         
-        if (userChannelDao.exists(user.getId(), channelId)) {
-	        throw new RuntimeException("Usuario ja pertence ao canal");
-	    }
+        Role oldRole = userChannelDao.getRole(user.getId(), channelId);
 
-	    userChannelDao.save(user.getId(), channelId, role);
+        if (oldRole == null) {
+            // User not in channel, save new entry
+            userChannelDao.save(user.getId(), channelId, role);
+            if (role == Role.SUBSCRIBER) {
+                channelService.incrementSubscriberCount(channelId);
+            }
+        } else if (oldRole != role) {
+            // User is in channel with a different role, update it
+            userChannelDao.updateRole(user.getId(), channelId, role);
+            // Adjust subscriber counts
+            if (oldRole == Role.SUBSCRIBER && role != Role.SUBSCRIBER) {
+                channelService.decrementSubscriberCount(channelId);
+            } else if (oldRole != Role.SUBSCRIBER && role == Role.SUBSCRIBER) {
+                channelService.incrementSubscriberCount(channelId);
+            }
+        }
+        // If oldRole == role, do nothing (user already has this role)
 	}
 
     public boolean isUserSubscribed(long userId, long channelId) throws SQLException {

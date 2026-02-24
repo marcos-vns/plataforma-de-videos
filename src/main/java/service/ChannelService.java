@@ -55,32 +55,28 @@ public class ChannelService {
     }
 
     public void deleteChannel(long channelId) throws SQLException {
-        // 1. Get all posts for the channel and delete them (cascades to comments and files)
-        java.util.List<model.Post> channelPosts = postService.findPostsByChannel(channelId); // Assuming this method exists
+        java.util.List<model.Post> channelPosts = postService.findPostsByChannel(channelId);
         for (model.Post post : channelPosts) {
             postService.deletePost(post.getId());
         }
 
-        // 2. Delete the channel itself
-        channelDao.delete(channelId); // Assuming ChannelDAO.delete(long channelId) exists
+        channelDao.delete(channelId);
     }
 
     public void updateChannelName(long channelId, String newName) throws SQLException {
         if (newName == null || newName.trim().isEmpty()) {
             throw new IllegalArgumentException("O nome do canal não pode ser vazio.");
         }
-        // Potentially add more business logic here, e.g., checking for name uniqueness
+
         channelDao.updateName(channelId, newName);
     }
 
     public void updateChannelProfilePicture(long channelId, String newProfilePictureUrl) throws SQLException {
-        // Retrieve the current channel data to get the old profile picture URL
         Channel oldChannel = channelDao.findById(channelId, UserSession.getUser() != null ? UserSession.getUser().getId() : -1);
         if (oldChannel == null) {
             throw new IllegalArgumentException("Canal não encontrado para atualização da imagem de perfil.");
         }
 
-        // Delete the old profile picture if a new one is provided and it's different
         if (newProfilePictureUrl != null && !newProfilePictureUrl.isEmpty() &&
             oldChannel.getProfilePictureUrl() != null && !oldChannel.getProfilePictureUrl().equals(newProfilePictureUrl)) {
             fileService.deleteFile(oldChannel.getProfilePictureUrl());

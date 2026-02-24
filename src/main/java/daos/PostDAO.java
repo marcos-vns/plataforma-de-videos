@@ -329,6 +329,16 @@ public class PostDAO {
         return null;
     }
 
+    public void updatePostTitle(long postId, String newTitle) throws SQLException {
+        String sql = "UPDATE posts SET title = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newTitle);
+            ps.setLong(2, postId);
+            ps.executeUpdate();
+        }
+    }
+
 
     private void saveVideo(Video video, Connection conn) throws SQLException {
         String sql = "INSERT INTO videos (post_id, description, duration_seconds, video_url, video_category) VALUES (?, ?, ?, ?, ?)";
@@ -352,6 +362,26 @@ public class PostDAO {
             ps.setLong(1, text.getId());
             ps.setString(2, text.getContent());
             
+            ps.executeUpdate();
+        }
+    }
+
+    public void updateVideoDescription(long postId, String newDescription) throws SQLException {
+        String sql = "UPDATE videos SET description = ? WHERE post_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newDescription);
+            ps.setLong(2, postId);
+            ps.executeUpdate();
+        }
+    }
+
+    public void updateTextPostContent(long postId, String newContent) throws SQLException {
+        String sql = "UPDATE text_posts SET content = ? WHERE post_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newContent);
+            ps.setLong(2, postId);
             ps.executeUpdate();
         }
     }

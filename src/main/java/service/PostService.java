@@ -112,5 +112,32 @@ public class PostService {
                 public Boolean getUserReaction(long userId, long postId) throws SQLException {
                     return postDAO.getUserReaction(userId, postId);
                 }
+
+                public void updatePost(long postId, String newTitle, String newDescription) throws SQLException {
+                    if (newTitle == null || newTitle.trim().isEmpty()) {
+                        throw new IllegalArgumentException("O título do post não pode ser vazio.");
+                    }
+
+                    Post post = postDAO.findById(postId);
+                    if (post == null) {
+                        throw new IllegalArgumentException("Post não encontrado.");
+                    }
+
+                    // Always update the title
+                    postDAO.updatePostTitle(postId, newTitle);
+
+                    // If it's a video, update its description
+                    if (post instanceof Video) {
+                        if (newDescription == null) {
+                            newDescription = ""; // Ensure description is not null for DB update
+                        }
+                        postDAO.updateVideoDescription(postId, newDescription);
+                    } else if (post instanceof TextPost) {
+                        if (newDescription == null || newDescription.trim().isEmpty()) {
+                            throw new IllegalArgumentException("O conteúdo do post de texto não pode ser vazio.");
+                        }
+                        postDAO.updateTextPostContent(postId, newDescription);
+                    }
+                }
             }
             

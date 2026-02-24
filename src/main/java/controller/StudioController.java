@@ -47,7 +47,7 @@ public class StudioController {
     private CommentService commentService;
     private ChannelService channelService;
     private UserChannelService userChannelService;
-    private FileService fileService; // Added
+    private FileService fileService;
     private Channel currentChannel;
     private Role userRole;
     private Post selectedPost;
@@ -57,7 +57,7 @@ public class StudioController {
     public void setCommentService(CommentService commentService) { this.commentService = commentService; }
     public void setChannelService(ChannelService channelService) { this.channelService = channelService; }
     public void setUserChannelService(UserChannelService userChannelService) { this.userChannelService = userChannelService; }
-    public void setFileService(FileService fileService) { this.fileService = fileService; } // Added
+    public void setFileService(FileService fileService) { this.fileService = fileService; }
 
     public void setChannel(Channel channel) {
         if (channelService != null) {
@@ -276,9 +276,41 @@ public class StudioController {
 
     @FXML
     private void handleUpdatePost() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText("Funcionalidade de edição de post será implementada em breve.");
-        alert.show();
+        if (selectedPost == null) return;
+
+        String newTitle = editTitleField.getText();
+        String newDescription = editDescriptionField.getText(); // This will be used for video description
+
+        try {
+            postService.updatePost(selectedPost.getId(), newTitle, newDescription);
+
+            // Update local selectedPost object and refresh UI
+            selectedPost.setTitle(newTitle);
+            if (selectedPost instanceof Video videoPost) {
+                videoPost.setDescription(newDescription);
+            } else if (selectedPost instanceof TextPost textPost) { // Added
+                textPost.setContent(newDescription); // Added
+            }
+            
+            // Refresh elements that display the post info
+            moderatingPostTitle.setText("Moderando: " + selectedPost.getTitle());
+            postsListView.refresh(); // To reflect changes in the list view
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("Post atualizado com sucesso!");
+            alert.showAndWait();
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar post (SQL): " + e.getMessage());
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Erro ao atualizar post: " + e.getMessage());
+            alert.showAndWait();
+        } catch (IllegalArgumentException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Aviso: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     @FXML
@@ -340,7 +372,6 @@ public class StudioController {
         dialog.setTitle("Editar Canal");
         dialog.setHeaderText("Alterar nome e imagem de perfil do canal");
 
-        // Set the button types
         ButtonType updateButtonType = new ButtonType("Atualizar", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
 
@@ -394,10 +425,8 @@ public class StudioController {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Request focus on the username field by default.
         Platform.runLater(() -> channelNameField.requestFocus());
 
-        // Convert the result to a username-password-pair when the login button is clicked.
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == updateButtonType) {
                 return new javafx.util.Pair<>(channelNameField.getText(), selectedImageFile[0]);
@@ -413,16 +442,13 @@ public class StudioController {
             boolean updated = false;
 
             try {
-                // Update channel name if changed
                 if (!newName.equals(currentChannel.getName())) {
                     channelService.updateChannelName(currentChannel.getId(), newName);
                     currentChannel.setName(newName);
                     updated = true;
                 }
 
-                // Update profile picture if a new file was selected
                 if (newImageFile != null) {
-                    // This assumes FileService has a method to save profile pictures and returns the URL
                     String newProfilePictureUrl = fileService.saveFile(newImageFile, "PROFILE");
                     channelService.updateChannelProfilePicture(currentChannel.getId(), newProfilePictureUrl);
                     currentChannel.setProfilePictureUrl(newProfilePictureUrl);

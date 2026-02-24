@@ -37,4 +37,3 @@ public class AuthenticationService {
         UserSession.logout();
     }
 }
-
