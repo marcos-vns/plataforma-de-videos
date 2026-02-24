@@ -44,6 +44,8 @@ public class SceneManager {
                             service.UserService usService) {
 
         stage = primaryStage;
+        stage.setMinWidth(1280);
+        stage.setMinHeight(720);
         authenticationService = authService;
         channelService = chService;
         userChannelService = ucService;
@@ -222,8 +224,11 @@ public class SceneManager {
             dialogStage.setTitle("Criar Canal");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(stage);
+            dialogStage.setWidth(600);
+            dialogStage.setHeight(400);
             Scene scene = new Scene(root);
             dialogStage.setScene(scene);
+            dialogStage.centerOnScreen();
 
             dialogStage.showAndWait();
 
